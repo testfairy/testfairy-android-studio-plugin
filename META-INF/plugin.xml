@@ -1,0 +1,61 @@
+<idea-plugin version="2">
+    <id>com.testfairy.plugin</id>
+    <name>Test Fairy Android Studio Plugin</name>
+    <version>1.0</version>
+    <vendor email="support@testfairy.com" url="http://www.testfairy.com">Test Fairy</vendor>
+
+    <description><![CDATA[
+      Test Fairy Android Studio plugin.<br>
+      <em>upload your app to Test Fairy with a single click</em>
+    ]]></description>
+
+    <change-notes><![CDATA[
+      Initial version.<br>
+      Click to deploy
+    ]]>
+    </change-notes>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="131"/>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <application-components>
+        <!-- Add your application components here -->
+        <component>
+            <implementation-class>com.testfairy.intellijplugin.Plugin</implementation-class>
+        </component>
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+
+    <!-- Actions -->
+    <actions>
+        <!-- The <group> element defines an action group. <action>, <group> and <separator> elements defined within it are automatically included in the group.
+               The mandatory "id" attribute specifies an unique identifier for the action.
+               The optional "class" attribute specifies the full-qualified name of the class implementing the group. If not specified,
+               com.intellij.openapi.actionSystem.DefaultActionGroup is used.
+               The optional "text" attribute specifies the text of the group (text for the menu item showing the submenu).
+               The optional "description" attribute specifies the text which is displayed in the status bar when the group is focused.
+               The optional "icon" attribute specifies the icon which is displayed on the toolbar button or next to the group.
+               The optional "popup" attribute specifies how the group is presented in the menu. If a group has popup="true", actions in it
+               are placed in a submenu; for popup="false", actions are displayed as a section of the same menu delimited by separators. -->
+        <group class="com.testfairy.intellijplugin.ActionGroup" id="TestFairyMenu" text="Test Fairy"
+               description="Test Fairy Actions"
+               icon="icons/testfairy.png" popup="true">
+            <action id="TestFairy.BuildAndSendAction" class="com.testfairy.intellijplugin.BuildAndSendToTestFairy"
+                    text="Build and Upload to Test Fairy" description="Deploy the apk to Test Fairy for testing"/>
+            <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="AndroidMenu"/>
+        </group>
+    </actions>
+
+</idea-plugin>
