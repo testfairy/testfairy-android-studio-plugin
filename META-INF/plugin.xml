@@ -40,21 +40,20 @@
 
     <!-- Actions -->
     <actions>
-        <!-- The <group> element defines an action group. <action>, <group> and <separator> elements defined within it are automatically included in the group.
-               The mandatory "id" attribute specifies an unique identifier for the action.
-               The optional "class" attribute specifies the full-qualified name of the class implementing the group. If not specified,
-               com.intellij.openapi.actionSystem.DefaultActionGroup is used.
-               The optional "text" attribute specifies the text of the group (text for the menu item showing the submenu).
-               The optional "description" attribute specifies the text which is displayed in the status bar when the group is focused.
-               The optional "icon" attribute specifies the icon which is displayed on the toolbar button or next to the group.
-               The optional "popup" attribute specifies how the group is presented in the menu. If a group has popup="true", actions in it
-               are placed in a submenu; for popup="false", actions are displayed as a section of the same menu delimited by separators. -->
         <group class="com.testfairy.intellijplugin.ActionGroup" id="TestFairyMenu" text="Test Fairy"
                description="Test Fairy Actions"
-               icon="icons/testfairy.png" popup="true">
-            <action id="TestFairy.BuildAndSendAction" class="com.testfairy.intellijplugin.BuildAndSendToTestFairy"
-                    text="Build and Upload to Test Fairy" description="Deploy the apk to Test Fairy for testing"/>
+               icon="/testfairy.png" popup="false">
+            <action id="TestFairy.UploadAction" class="com.testfairy.intellijplugin.BuildAndSendToTestFairy"
+                    icon="/testfairy.png"
+                    text="Build and Upload to Test Fairy"
+                    description="Deploy the apk to Test Fairy for testing"/>
             <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="AndroidMenu"/>
+        </group>
+        <group id="TestFairyToolbar">
+            <separator/>
+            <reference ref="TestFairy.UploadAction"/>
+            <separator/>
+            <add-to-group group-id="RunnerActions" relative-to-action="RunnerActions" anchor="after"/>
         </group>
     </actions>
 
