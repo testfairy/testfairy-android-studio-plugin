@@ -1,0 +1,1 @@
+# testfairy-android-studio-plugin
