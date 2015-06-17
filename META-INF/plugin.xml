@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.testfairy.plugin</id>
     <name>Test Fairy Android Studio Plugin</name>
-    <version>1.0</version>
+    <version>1.0.2</version>
     <vendor email="support@testfairy.com" url="http://www.testfairy.com">Test Fairy</vendor>
 
     <description><![CDATA[
