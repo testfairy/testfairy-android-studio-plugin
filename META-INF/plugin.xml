@@ -1,0 +1,63 @@
+<idea-plugin version="2">
+    <id>com.testfairy.plugin</id>
+    <name>Test Fairy Android Studio Plugin</name>
+    <version>1.0</version>
+    <vendor email="support@testfairy.com" url="http://www.testfairy.com">Test Fairy</vendor>
+
+    <description><![CDATA[
+      Test Fairy Android Studio plugin.<br>
+      <em>upload your app to Test Fairy with a single click</em>
+    ]]></description>
+
+    <change-notes><![CDATA[
+      Initial version.<br>
+      Click to deploy
+    ]]>
+    </change-notes>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="131"/>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <application-components>
+        <!-- Add your application components here -->
+        <component>
+            <implementation-class>com.testfairy.intellijplugin.Plugin</implementation-class>
+        </component>
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+
+    <!-- Actions -->
+    <actions>
+        <group class="com.testfairy.intellijplugin.ActionGroup" id="TestFairyMenu" text="Test Fairy"
+               description="Test Fairy Actions"
+               icon="/testfairy.png" popup="true">
+            <action id="TestFairy.UploadAction" class="com.testfairy.intellijplugin.BuildAndSendToTestFairy"
+                    icon="/testfairy.png"
+                    text="Build and Upload to Test Fairy"
+                    description="Deploy the apk to Test Fairy for testing"/>
+            <action id="TestFairy.ConfigureAction" class="com.testfairy.intellijplugin.ConfigureTestFairy"
+                    text="Settings"
+                    description="Set Test Fairy API Key"/>
+            <add-to-group group-id="BuildMenu" anchor="after" relative-to-action="AndroidMenu"/>
+        </group>
+        <group id="TestFairyToolbar">
+            <separator/>
+            <reference ref="TestFairy.UploadAction"/>
+            <separator/>
+            <add-to-group group-id="RunnerActions" relative-to-action="RunnerActions" anchor="after"/>
+        </group>
+    </actions>
+
+</idea-plugin>
