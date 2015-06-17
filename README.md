@@ -5,6 +5,7 @@
 1. Clone this repo
     <pre>git clone git@github.com:testfairy/testfairy-android-studio-plugin.git</pre>
 
+1. From IDEA use File/Open and select the cloned directory.
 1. In the main menu go to Build/Prepare Plugin Module 'TestFairyAndroidStudioPlugin' For Deployment.
 If you are all set, that will be all. Most likely, first time you'll have to complete the rest of the steps.
 1. IDEA will normally complain about missing SDK and proceed to Project Structure/SDK dialog.
