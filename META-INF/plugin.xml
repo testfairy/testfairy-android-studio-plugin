@@ -29,7 +29,7 @@
     <application-components>
         <!-- Add your application components here -->
         <component>
-            <implementation-class>com.testfairy.intellijplugin.Plugin</implementation-class>
+            <implementation-class>com.testfairy.plugin.intellij.Plugin</implementation-class>
         </component>
     </application-components>
 
@@ -40,14 +40,14 @@
 
     <!-- Actions -->
     <actions>
-        <group class="com.testfairy.intellijplugin.ActionGroup" id="TestFairyMenu" text="Test Fairy"
+        <group class="com.testfairy.plugin.intellij.ActionGroup" id="TestFairyMenu" text="Test Fairy"
                description="Test Fairy Actions"
                icon="/testfairy.png" popup="true">
-            <action id="TestFairy.UploadAction" class="com.testfairy.intellijplugin.BuildAndSendToTestFairy"
+            <action id="TestFairy.UploadAction" class="com.testfairy.plugin.intellij.BuildAndSendToTestFairy"
                     icon="/testfairy.png"
                     text="Build and Upload to Test Fairy"
                     description="Deploy the apk to Test Fairy for testing"/>
-            <action id="TestFairy.ConfigureAction" class="com.testfairy.intellijplugin.ConfigureTestFairy"
+            <action id="TestFairy.ConfigureAction" class="com.testfairy.plugin.intellij.ConfigureTestFairy"
                     text="Settings"
                     description="Set Test Fairy API Key"/>
             <add-to-group group-id="BuildMenu" anchor="after" relative-to-action="AndroidMenu"/>
