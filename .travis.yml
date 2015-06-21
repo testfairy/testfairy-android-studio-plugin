@@ -1,0 +1,11 @@
+language: java
+
+jdk:
+  - oraclejdk6
+  - openjdk6
+
+before_script:
+  - git clone --depth 1 git://git.jetbrains.org/idea/community.git idea
+  
+script:
+  - ant
