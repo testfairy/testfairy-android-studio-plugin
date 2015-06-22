@@ -50,6 +50,15 @@ public class BuildAndSendToTestFairy extends AnAction {
         fileToPatch = project.getBasePath() + "/app/build.gradle";
         buildFilePatcher = new BuildFilePatcher(fileToPatch);
 
+
+        try {
+            if (!isTestfairyGradlePluginConfigured()) {
+                buildFilePatcher.patchBuildFile(testFairyConfig);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         final List<String> testFairyTasks = getTestFairyTasks();
         final int selection = Messages.showChooseDialog(
                 "Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
@@ -60,10 +69,6 @@ public class BuildAndSendToTestFairy extends AnAction {
                 try {
 
                     indicator.setIndeterminate(true);
-
-                    if (!isTestfairyGradlePluginConfigured()) {
-                        buildFilePatcher.patchBuildFile(testFairyConfig);
-                    }
 
                     String url = packageRelease(testFairyTasks.get(selection));
 
@@ -153,7 +158,7 @@ public class BuildAndSendToTestFairy extends AnAction {
                     break;
                 }
             }
-            if(result.length() == 0) {
+            if (result.length() == 0) {
                 System.err.println("WARNING: api URL not found in testfairy build output");
             }
 
