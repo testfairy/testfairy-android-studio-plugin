@@ -1,6 +1,6 @@
 <idea-plugin version="2">
     <id>com.testfairy.plugin</id>
-    <name>Test Fairy Android Studio Plugin</name>
+    <name>TestFairy Integration</name>
     <version>1.0.3.5</version>
     <vendor email="support@testfairy.com" url="http://www.testfairy.com">Test Fairy</vendor>
 
