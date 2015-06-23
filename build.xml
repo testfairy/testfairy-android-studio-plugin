@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="testfairy-android-studio-plugin" default="all">
+  
+  
+  <property file="build.properties"/>
+
+  <!-- Set jdk.home if not specified in build.properties. -->
+  <condition property="jdk.home" value="${java.home}/..">
+    <not>
+      <isset property="jdk.home"/>
+    </not>
+  </condition>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.tox/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.ear"/>
+    <include name="*.apk"/>
+    <include name="*.zip"/>
+    <include name="*.swc"/>
+    <include name="*.ane"/>
+    <include name="*.egg"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+
+  <property name="jdk.bin" value="${jdk.home}/bin"/>
+  <path id="jdk.classpath">
+    <fileset dir="${jdk.home}">
+      <include name="lib/ant-javafx.jar"/>
+      <include name="lib/dt.jar"/>
+      <include name="lib/javafx-doclet.jar"/>
+      <include name="lib/javafx-mx.jar"/>
+      <include name="lib/jconsole.jar"/>
+      <include name="lib/sa-jdi.jar"/>
+      <include name="lib/tools.jar"/>
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/htmlconverter.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jfr.jar"/>
+      <include name="jre/lib/jfxrt.jar"/>
+      <include name="jre/lib/JObjC.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+    </fileset>
+    <pathelement location="${idea.home}/lib/junit-4.11.jar" />
+    <fileset dir="${idea.home}" includes="**/*.jar">
+      <exclude name="lib/ant/lib/**"/>
+    </fileset>
+  </path>
+
+  <property name="project.jdk.home" value="${java.home}/.."/>
+  <property name="project.jdk.bin" value="${jdk.bin}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.gradle-base-services-2.2.classpath">
+    <pathelement location="${basedir}/lib/gradle-base-services-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-base-services-groovy-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-cli-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-core-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-messaging-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-model-core-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-model-groovy-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-native-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-resources-2.2.jar"/>
+    <pathelement location="${basedir}/lib/gradle-tooling-api-2.2.jar"/>
+  </path>
+  
+  <path id="library.gradle-wrapper-2.2.classpath">
+    <pathelement location="${basedir}/lib/gradle-wrapper-2.2.jar"/>
+  </path>
+  
+  <path id="library.slf4j-api-1.7.12.classpath">
+    <pathelement location="${basedir}/lib/slf4j-api-1.7.12.jar"/>
+  </path>
+  
+  <path id="library.slf4j-simple-1.7.12.classpath">
+    <pathelement location="${basedir}/lib/slf4j-simple-1.7.12.jar"/>
+  </path>
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <pathelement location="${javac2.home}/javac2.jar"/>
+    <pathelement location="${javac2.home}/jdom.jar"/>
+    <pathelement location="${javac2.home}/asm-all.jar"/>
+    <pathelement location="${javac2.home}/jgoodies-forms.jar"/>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module TestFairyAndroidStudioPlugin -->
+  
+  <dirname property="module.testfairyandroidstudioplugin.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.testfairyandroidstudioplugin" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.testfairyandroidstudioplugin" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.testfairyandroidstudioplugin" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.testfairyandroidstudioplugin" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="testfairyandroidstudioplugin.output.dir" value="${module.testfairyandroidstudioplugin.basedir}/out/production/TestFairyAndroidStudioPlugin"/>
+  <property name="testfairyandroidstudioplugin.testoutput.dir" value="${module.testfairyandroidstudioplugin.basedir}/out/test/TestFairyAndroidStudioPlugin"/>
+  
+  <path id="testfairyandroidstudioplugin.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="testfairyandroidstudioplugin.module.production.classpath">
+    <path refid="${module.jdk.classpath.testfairyandroidstudioplugin}"/>
+    <path refid="library.gradle-base-services-2.2.classpath"/>
+    <path refid="library.gradle-wrapper-2.2.classpath"/>
+    <path refid="library.slf4j-api-1.7.12.classpath"/>
+    <path refid="library.slf4j-simple-1.7.12.classpath"/>
+  </path>
+  
+  <path id="testfairyandroidstudioplugin.runtime.production.module.classpath">
+    <pathelement location="${testfairyandroidstudioplugin.output.dir}"/>
+    <path refid="library.gradle-base-services-2.2.classpath"/>
+    <path refid="library.gradle-wrapper-2.2.classpath"/>
+    <path refid="library.slf4j-api-1.7.12.classpath"/>
+    <path refid="library.slf4j-simple-1.7.12.classpath"/>
+  </path>
+  
+  <path id="testfairyandroidstudioplugin.module.classpath">
+    <path refid="${module.jdk.classpath.testfairyandroidstudioplugin}"/>
+    <pathelement location="${testfairyandroidstudioplugin.output.dir}"/>
+    <path refid="library.gradle-base-services-2.2.classpath"/>
+    <path refid="library.gradle-wrapper-2.2.classpath"/>
+    <path refid="library.slf4j-api-1.7.12.classpath"/>
+    <path refid="library.slf4j-simple-1.7.12.classpath"/>
+  </path>
+  
+  <path id="testfairyandroidstudioplugin.runtime.module.classpath">
+    <pathelement location="${testfairyandroidstudioplugin.testoutput.dir}"/>
+    <pathelement location="${testfairyandroidstudioplugin.output.dir}"/>
+    <path refid="library.gradle-base-services-2.2.classpath"/>
+    <path refid="library.gradle-wrapper-2.2.classpath"/>
+    <path refid="library.slf4j-api-1.7.12.classpath"/>
+    <path refid="library.slf4j-simple-1.7.12.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.testfairyandroidstudioplugin">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.testfairyandroidstudioplugin">
+    <patternset refid="excluded.from.module.testfairyandroidstudioplugin"/>
+  </patternset>
+  
+  <path id="testfairyandroidstudioplugin.module.sourcepath">
+    <dirset dir="${module.testfairyandroidstudioplugin.basedir}">
+      <include name="src"/>
+      <include name="resources/icons"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.testfairyandroidstudioplugin" depends="compile.module.testfairyandroidstudioplugin.production,compile.module.testfairyandroidstudioplugin.tests" description="Compile module TestFairyAndroidStudioPlugin"/>
+  
+  <target name="compile.module.testfairyandroidstudioplugin.production" depends="register.custom.compilers" description="Compile module TestFairyAndroidStudioPlugin; production classes">
+    <mkdir dir="${testfairyandroidstudioplugin.output.dir}"/>
+    <javac2 destdir="${testfairyandroidstudioplugin.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.testfairyandroidstudioplugin}/javac">
+      <compilerarg line="${compiler.args.testfairyandroidstudioplugin}"/>
+      <bootclasspath refid="testfairyandroidstudioplugin.module.bootclasspath"/>
+      <classpath refid="testfairyandroidstudioplugin.module.production.classpath"/>
+      <src refid="testfairyandroidstudioplugin.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.testfairyandroidstudioplugin"/>
+    </javac2>
+    
+    <copy todir="${testfairyandroidstudioplugin.output.dir}">
+      <fileset dir="${module.testfairyandroidstudioplugin.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.testfairyandroidstudioplugin.basedir}/resources/icons">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.testfairyandroidstudioplugin.tests" depends="register.custom.compilers,compile.module.testfairyandroidstudioplugin.production" description="compile module TestFairyAndroidStudioPlugin; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.testfairyandroidstudioplugin" description="cleanup module">
+    <delete dir="${testfairyandroidstudioplugin.output.dir}"/>
+    <delete dir="${testfairyandroidstudioplugin.testoutput.dir}"/>
+  </target>
+  
+  <property name="testfairyandroidstudioplugin.plugin.path.jar" value="${module.testfairyandroidstudioplugin.basedir}/TestFairyAndroidStudioPlugin.zip"/>
+  
+  <!-- Build archive for plugin 'TestFairyAndroidStudioPlugin' -->
+  <target name="plugin.build.jar.testfairyandroidstudioplugin" depends="compile.module.testfairyandroidstudioplugin" description="Build plugin archive for module &#39;TestFairyAndroidStudioPlugin&#39;">
+    <property name="tmp.dir.testfairyandroidstudioplugin" value="${module.testfairyandroidstudioplugin.basedir}/../temp/TestFairyAndroidStudioPlugin"/>
+    <mkdir dir="${tmp.dir.testfairyandroidstudioplugin}/lib"/>
+    <jar destfile="${tmp.dir.testfairyandroidstudioplugin}/lib/TestFairyAndroidStudioPlugin.jar" duplicate="preserve">
+      <zipfileset dir="${module.testfairyandroidstudioplugin.basedir}/out/production/TestFairyAndroidStudioPlugin"/>
+      <zipfileset file="${module.testfairyandroidstudioplugin.basedir}/META-INF/plugin.xml" prefix="META-INF"/>
+      <manifest>
+        <attribute name="Created-By" value="IntelliJ IDEA"/>
+        <attribute name="Manifest-Version" value="1.0"/>
+      </manifest>
+    </jar>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/slf4j-api-1.7.12.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/slf4j-api-1.7.12.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/slf4j-simple-1.7.12.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/slf4j-simple-1.7.12.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-wrapper-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-wrapper-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-base-services-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-base-services-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-base-services-groovy-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-base-services-groovy-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-cli-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-cli-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-core-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-core-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-messaging-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-messaging-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-model-core-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-model-core-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-model-groovy-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-model-groovy-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-native-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-native-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-resources-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-resources-2.2.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-tooling-api-2.2.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-tooling-api-2.2.jar"/>
+    <zip destfile="${testfairyandroidstudioplugin.plugin.path.jar}">
+      <fileset dir="${module.testfairyandroidstudioplugin.basedir}/../temp"/>
+    </zip>
+    <delete dir="${tmp.dir.testfairyandroidstudioplugin}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.testfairyandroidstudioplugin" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, plugin.build.jar.testfairyandroidstudioplugin" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>

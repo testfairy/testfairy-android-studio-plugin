@@ -11,16 +11,18 @@ import com.intellij.util.ArrayUtil;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
-import org.jetbrains.annotations.NotNull;
 import org.kohsuke.rngom.ast.builder.BuildException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.lang.InterruptedException;
+import java.lang.Exception;
 
 public class BuildAndSendToTestFairy extends AnAction {
 
@@ -65,7 +67,7 @@ public class BuildAndSendToTestFairy extends AnAction {
 
         new Task.Backgroundable(project, "Building&Uploading to Test Fairy", false) {
             @Override
-            public void run(@NotNull ProgressIndicator indicator) {
+            public void run(ProgressIndicator indicator) {
                 try {
 
                     indicator.setIndeterminate(true);
@@ -78,7 +80,7 @@ public class BuildAndSendToTestFairy extends AnAction {
                     indicator.setText("Success");
                     Thread.sleep(3000);
                     indicator.stop();
-                } catch (Exception e1) {
+                } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
             }
@@ -169,7 +171,6 @@ public class BuildAndSendToTestFairy extends AnAction {
         return result;
     }
 
-    @NotNull
     private File getProjectDirectoryFile() {
         return new File(project.getBasePath());
     }
@@ -184,8 +185,10 @@ public class BuildAndSendToTestFairy extends AnAction {
         try {
             BrowserLauncher.getInstance().browse(new URI(url));
             Thread.sleep(3000);
-        } catch (Exception e1) {
+        } catch (InterruptedException e1) {
             e1.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
     }
 
