@@ -4,7 +4,7 @@ jdk:
   - oraclejdk7
 
 before_script:
-  - git clone --depth 1 git://git.jetbrains.org/idea/community.git idea
-  
+  - get-idea-ic.sh
+
 script:
-  - ant
+  - ant all
