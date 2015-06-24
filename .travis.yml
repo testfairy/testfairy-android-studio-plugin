@@ -4,7 +4,7 @@ jdk:
   - oraclejdk7
 
 before_script:
-  - get-idea-ic.sh
+  - sh get-idea-ic.sh
 
 script:
   - ant all
