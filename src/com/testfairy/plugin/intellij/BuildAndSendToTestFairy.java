@@ -42,6 +42,10 @@ public class BuildAndSendToTestFairy extends AnAction {
             configureTestFairyAction.execute(e.getProject());
         }
 
+        if (!configureTestFairyAction.isConfigured()) {
+            return;
+        }
+
         testFairyConfig = configureTestFairyAction.getConfig();
 
         execute(e.getProject());
@@ -64,6 +68,9 @@ public class BuildAndSendToTestFairy extends AnAction {
         final List<String> testFairyTasks = getTestFairyTasks();
         final int selection = Messages.showChooseDialog(
                 "Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
+        if(selection == -1) {
+            return;
+        }
 
         new Task.Backgroundable(project, "Building&Uploading to TestFairy", false) {
             @Override
