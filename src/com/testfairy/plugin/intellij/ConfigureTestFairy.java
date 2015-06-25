@@ -60,7 +60,7 @@ public class ConfigureTestFairy extends AnAction {
             Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "API Key Saved: " + this.apiKey, NotificationType.INFORMATION), project);
         }
         else {
-            Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "No API key provided" + this.apiKey, NotificationType.ERROR), project);
+            Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "No API key provided", NotificationType.ERROR), project);
         }
     }
 

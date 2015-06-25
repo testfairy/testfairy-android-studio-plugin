@@ -3,6 +3,8 @@ jdk:
 - oraclejdk7
 before_script:
 - sh get-idea-ic.sh
+- sed -i -- "s/{{PLUGIN_VERSION}}/$TRAVIS_TAG/g" META-INF/plugin.xml
+
 script:
 - ant all
 deploy:
