@@ -1,6 +1,9 @@
 package com.testfairy.plugin.intellij;
 
 import com.intellij.ide.browsers.BrowserLauncher;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -8,14 +11,14 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.util.ArrayUtil;
+import com.testfairy.plugin.intellij.exception.TestFairyException;
 import org.gradle.tooling.BuildLauncher;
+import org.gradle.tooling.GradleConnectionException;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.kohsuke.rngom.ast.builder.BuildException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -68,7 +71,7 @@ public class BuildAndSendToTestFairy extends AnAction {
         final List<String> testFairyTasks = getTestFairyTasks();
         final int selection = Messages.showChooseDialog(
                 "Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
-        if(selection == -1) {
+        if (selection == -1) {
             return;
         }
 
@@ -89,6 +92,8 @@ public class BuildAndSendToTestFairy extends AnAction {
                     indicator.stop();
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
+                } catch (TestFairyException tfe) {
+                    Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "Invalid TestFairy API key. Please use Build/TestFairy/Settings to fix.", NotificationType.ERROR), project);
                 }
             }
         }.queue();
@@ -130,7 +135,7 @@ public class BuildAndSendToTestFairy extends AnAction {
         return tasks;
     }
 
-    private String packageRelease(String task) throws BuildException {
+    private String packageRelease(String task) throws TestFairyException {
         String result = "";
         try {
             OutputStream outputStream = new OutputStream() {
@@ -156,9 +161,18 @@ public class BuildAndSendToTestFairy extends AnAction {
             build.forTasks(task);
 
             build.setStandardOutput(outputStream);
-            build.run();
+            try {
+                build.run();
+            } catch (GradleConnectionException gce) {
+                if (checkInvalidAPIKey(gce)) {
+                    throw new TestFairyException("Invalid API key. Please use Build/TestFairy/Settings to fix.");
+                }
+            } catch (IllegalStateException ise) {
+                ise.printStackTrace();
+            }
 
             connection.close();
+
             String lines[] = outputStream.toString().split("\\r?\\n");
             int i = lines.length;
             while (--i >= 0) {
@@ -168,7 +182,7 @@ public class BuildAndSendToTestFairy extends AnAction {
                 }
             }
             if (result.length() == 0) {
-                System.err.println("WARNING: api URL not found in testfairy build output");
+                System.err.println("WARNING: api URL not found in TestFairy build output");
             }
 
             Thread.sleep(3000);
@@ -176,6 +190,19 @@ public class BuildAndSendToTestFairy extends AnAction {
             e1.printStackTrace();
         }
         return result;
+    }
+
+    private boolean checkInvalidAPIKey(GradleConnectionException gce) {
+
+        StringWriter writer = new StringWriter();
+        gce.printStackTrace(new PrintWriter(writer));
+
+        if(writer.getBuffer().toString().contains("Invalid API key")) {
+            return true;
+        }
+
+        return false;
+
     }
 
     private File getProjectDirectoryFile() {

@@ -4,6 +4,9 @@ import com.intellij.ide.passwordSafe.MasterPasswordUnavailableException;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.ide.passwordSafe.PasswordSafeException;
 import com.intellij.ide.passwordSafe.impl.PasswordSafeImpl;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -42,7 +45,7 @@ public class ConfigureTestFairy extends AnAction {
         catch (MasterPasswordUnavailableException ignored) {
         }
         catch (PasswordSafeException e) {
-            Messages.showErrorDialog("Couldn't save API key due to IDE error", "API Key not Saved");
+            Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "Couldn't save API key due to IDE error.", NotificationType.ERROR), project);
         }
     }
 
@@ -54,11 +57,10 @@ public class ConfigureTestFairy extends AnAction {
             persistConfig();
             String fileToPatch = project.getBasePath() + "/app/build.gradle";
             (new BuildFilePatcher(fileToPatch)).patchBuildFile(getConfig());
-
-            Messages.showInfoMessage(this.apiKey, "API Key Saved");
+            Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "API Key Saved: " + this.apiKey, NotificationType.INFORMATION), project);
         }
         else {
-            Messages.showWarningDialog("No API key provided", "API Key not Saved");
+            Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "No API key provided" + this.apiKey, NotificationType.ERROR), project);
         }
     }
 
@@ -71,7 +73,7 @@ public class ConfigureTestFairy extends AnAction {
             }
         } catch (MasterPasswordUnavailableException ignored) {
         } catch (PasswordSafeException e) {
-            Messages.showErrorDialog("Couldn't save API key due to IDE error", "API Key not Saved");
+            Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "Couldn't save API key due to IDE error.", NotificationType.ERROR), project);
         }
         return apiKey;
     }
