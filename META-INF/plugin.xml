@@ -2,11 +2,11 @@
     <id>com.testfairy.plugin</id>
     <name>TestFairy Integration</name>
     <version>1.0.3.5</version>
-    <vendor email="support@testfairy.com" url="http://www.testfairy.com">Test Fairy</vendor>
+    <vendor email="support@testfairy.com" url="http://www.testfairy.com">TestFairy</vendor>
 
     <description><![CDATA[
-      Test Fairy Android Studio plugin.<br>
-      <em>upload your app to Test Fairy with a single click</em>
+      TestFairy Integration plugin.<br>
+      <em>upload your app to TestFairy with a single click</em>
     ]]></description>
 
     <change-notes><![CDATA[
@@ -40,16 +40,16 @@
 
     <!-- Actions -->
     <actions>
-        <group class="com.testfairy.plugin.intellij.ActionGroup" id="TestFairyMenu" text="Test Fairy"
-               description="Test Fairy Actions"
+        <group class="com.testfairy.plugin.intellij.ActionGroup" id="TestFairyMenu" text="TestFairy"
+               description="TestFairy Actions"
                icon="/testfairy.png" popup="true">
             <action id="TestFairy.UploadAction" class="com.testfairy.plugin.intellij.BuildAndSendToTestFairy"
                     icon="/testfairy.png"
-                    text="Build and Upload to Test Fairy"
-                    description="Deploy the apk to Test Fairy for testing"/>
+                    text="Build and Upload to TestFairy"
+                    description="Deploy the apk to TestFairy for testing"/>
             <action id="TestFairy.ConfigureAction" class="com.testfairy.plugin.intellij.ConfigureTestFairy"
                     text="Settings"
-                    description="Set Test Fairy API Key"/>
+                    description="Set TestFairy API Key"/>
             <add-to-group group-id="BuildMenu" anchor="after" relative-to-action="AndroidMenu"/>
         </group>
         <group id="TestFairyToolbar">

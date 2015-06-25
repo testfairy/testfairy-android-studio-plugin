@@ -26,7 +26,7 @@ import java.lang.Exception;
 
 public class BuildAndSendToTestFairy extends AnAction {
 
-    public final static String PASSWORD_KEY = "test fairy api key";
+    public final static String PASSWORD_KEY = "TestFairy api key";
     private Project project;
     private TestFairyConfig testFairyConfig;
     private String fileToPatch;
@@ -65,7 +65,7 @@ public class BuildAndSendToTestFairy extends AnAction {
         final int selection = Messages.showChooseDialog(
                 "Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
 
-        new Task.Backgroundable(project, "Building&Uploading to Test Fairy", false) {
+        new Task.Backgroundable(project, "Building&Uploading to TestFairy", false) {
             @Override
             public void run(ProgressIndicator indicator) {
                 try {

@@ -49,7 +49,7 @@ public class ConfigureTestFairy extends AnAction {
     private void configure() throws IOException {
         String[] dummy = {};
         this.apiKey = Messages
-                .showInputDialog(project, "Enter your Test Fairy API key", "Config", Icons.TEST_FAIRY_ICON);
+                .showInputDialog(project, "Enter your TestFairy API key", "Config", Icons.TEST_FAIRY_ICON);
         if (this.apiKey != null && this.apiKey.length() > 0) {
             persistConfig();
             String fileToPatch = project.getBasePath() + "/app/build.gradle";
