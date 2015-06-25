@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.testfairy.plugin</id>
     <name>TestFairy Integration</name>
-    <version>tishma</version>
+    <version>{{PLUGIN_VERSION}}</version>
     <vendor email="support@testfairy.com" url="http://www.testfairy.com">TestFairy</vendor>
 
     <description><![CDATA[
