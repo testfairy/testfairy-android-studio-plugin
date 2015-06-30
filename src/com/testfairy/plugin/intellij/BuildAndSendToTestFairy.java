@@ -10,6 +10,8 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.util.ArrayUtil;
 import com.testfairy.plugin.intellij.exception.TestFairyException;
 import org.gradle.tooling.BuildLauncher;
@@ -35,6 +37,8 @@ public class BuildAndSendToTestFairy extends AnAction {
     private String fileToPatch;
     private BuildFilePatcher buildFilePatcher;
 
+    List<String> testFairyTasks;
+
     @Override
     public void actionPerformed(AnActionEvent e) {
         this.project = e.getProject();
@@ -50,6 +54,11 @@ public class BuildAndSendToTestFairy extends AnAction {
         }
 
         testFairyConfig = configureTestFairyAction.getConfig();
+
+        String[] ids = ToolWindowManager.getInstance(e.getProject()).getToolWindowIds();
+
+        ToolWindowManager.getInstance(e.getProject()).getToolWindow("Event Log").activate(null);
+        ToolWindowManager.getInstance(e.getProject()).getToolWindow("Messages").activate(null);
 
         execute(e.getProject());
     }
@@ -68,35 +77,56 @@ public class BuildAndSendToTestFairy extends AnAction {
             e.printStackTrace();
         }
 
-        final List<String> testFairyTasks = getTestFairyTasks();
-        final int selection = Messages.showChooseDialog(
-                "Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
-        if (selection == -1) {
-            return;
-        }
+        Task.Backgroundable bgTask = new Task.Backgroundable(project, "Building&Uploading to TestFairy", false) {
+            public int selection;
 
-        new Task.Backgroundable(project, "Building&Uploading to TestFairy", false) {
+            public int getSelection(){
+                return this.selection;
+            }
             @Override
             public void run(ProgressIndicator indicator) {
-                try {
+                indicator.setIndeterminate(true);
 
-                    indicator.setIndeterminate(true);
+                indicator.setText("Preparing Gradle Wrapper");
+                testFairyTasks = getTestFairyTasks();
 
-                    String url = packageRelease(testFairyTasks.get(selection));
-
-                    indicator.setText("Launching Browser");
-                    launchBrowser(url);
-
-                    indicator.setText("Success");
-                    Thread.sleep(3000);
-                    indicator.stop();
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                } catch (TestFairyException tfe) {
-                    Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "Invalid TestFairy API key. Please use Build/TestFairy/Settings to fix.", NotificationType.ERROR), project);
-                }
             }
-        }.queue();
+            @Override
+            public void onSuccess() {
+
+                selection = Messages.showChooseDialog(
+                        "Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
+                if (selection == -1) {
+                    return;
+                }
+
+                new Backgroundable(project, "Building&Uploading to TestFairy", false) {
+                    @Override
+                    public void run(ProgressIndicator indicator) {
+                        try {
+                            indicator.setIndeterminate(true);
+
+                            String url = packageRelease(testFairyTasks.get(selection));
+
+                            indicator.setText("Launching Browser");
+                            launchBrowser(url);
+
+                            indicator.setText("Success");
+                            Thread.sleep(3000);
+                            indicator.stop();
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        } catch (TestFairyException tfe) {
+                            Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "Invalid TestFairy API key. Please use Build/TestFairy/Settings to fix.", NotificationType.ERROR), project);
+                        }
+                    }
+                }.queue();
+            }
+
+        };
+        bgTask.queue();
+
+
     }
 
     private List<String> getTestFairyTasks() {
