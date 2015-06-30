@@ -22,8 +22,12 @@
          on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
 
+
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+
+        <toolWindow id="TestFairy" icon="/testfairy.png" anchor="bottom" factoryClass="com.testfairy.plugin.intellij.ToolWindowFactory">
+
+        </toolWindow>
     </extensions>
 
     <application-components>

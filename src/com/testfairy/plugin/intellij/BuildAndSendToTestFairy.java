@@ -1,5 +1,6 @@
 package com.testfairy.plugin.intellij;
 
+import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -57,8 +58,11 @@ public class BuildAndSendToTestFairy extends AnAction {
 
         String[] ids = ToolWindowManager.getInstance(e.getProject()).getToolWindowIds();
 
+        if(ToolWindowManager.getInstance(e.getProject()).getToolWindow("Messages") != null) {
+            ToolWindowManager.getInstance(e.getProject()).getToolWindow("Messages").activate(null);
+        }
         ToolWindowManager.getInstance(e.getProject()).getToolWindow("Event Log").activate(null);
-        ToolWindowManager.getInstance(e.getProject()).getToolWindow("Messages").activate(null);
+        ToolWindowManager.getInstance(e.getProject()).getToolWindow("TestFairy").activate(null);
 
         execute(e.getProject());
     }
@@ -167,13 +171,17 @@ public class BuildAndSendToTestFairy extends AnAction {
 
     private String packageRelease(String task) throws TestFairyException {
         String result = "";
+        OutputStream outputStream;
         try {
-            OutputStream outputStream = new OutputStream() {
+            ToolWindowFactory.consoleView.clear();
+             outputStream = new OutputStream() {
                 private StringBuilder string = new StringBuilder();
 
                 @Override
                 public void write(int b) throws IOException {
+                    char [] s = {(char)b};
                     this.string.append((char) b);
+                    ToolWindowFactory.consoleView.print(new String(s), ConsoleViewContentType.SYSTEM_OUTPUT);
                 }
 
                 //Netbeans IDE automatically overrides this toString()
@@ -191,6 +199,7 @@ public class BuildAndSendToTestFairy extends AnAction {
             build.forTasks(task);
 
             build.setStandardOutput(outputStream);
+            build.setStandardError(outputStream);
             try {
                 build.run();
             } catch (GradleConnectionException gce) {
