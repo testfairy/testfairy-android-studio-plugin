@@ -45,11 +45,12 @@ public class BuildAndSendToTestFairy extends AnAction {
 
             ConfigureTestFairy configureTestFairyAction = new ConfigureTestFairy();
 
-            if (!configureTestFairyAction.isConfigured()) {
+            if (!configureTestFairyAction.isConfigured(project)) {
                 configureTestFairyAction.execute(project);
             }
 
-            if (!configureTestFairyAction.isConfigured()) {
+            if (!configureTestFairyAction.isConfigured(project)) {
+                Plugin.broadcastError("TestFairy is not configured for this project.");
                 return;
             }
 
@@ -104,6 +105,11 @@ public class BuildAndSendToTestFairy extends AnAction {
 
             @Override
             public void onSuccess() {
+
+                if(testFairyTasks.size() == 0) {
+                    Plugin.broadcastError("No TestFairy build tasks found.");
+                    return;
+                }
 
                 selection = Messages.showChooseDialog(
                         "Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);

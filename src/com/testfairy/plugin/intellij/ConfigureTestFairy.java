@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -53,12 +54,17 @@ public class ConfigureTestFairy extends AnAction {
                 .showInputDialog(project, "Enter your TestFairy API key", "Config", Icons.TEST_FAIRY_ICON);
         if (this.apiKey != null && this.apiKey.length() > 0) {
             persistConfig();
-            String fileToPatch = project.getBasePath() + "/app/build.gradle";
+            String fileToPatch = findProjectBuildFilePath(project);
             (new BuildFilePatcher(fileToPatch)).patchBuildFile(getConfig());
             Plugin.broadcastInfo("API Key Saved.");
         } else {
             Plugin.broadcastInfo("No API key provided.");
         }
+    }
+
+    @NotNull
+    private String findProjectBuildFilePath(Project project) {
+        return project.getBasePath() + "/app/build.gradle";
     }
 
     private String getApiKey() {
@@ -83,8 +89,13 @@ public class ConfigureTestFairy extends AnAction {
         return tfe;
     }
 
-    public boolean isConfigured() {
+    public boolean isConfigured(Project project) {
         getApiKey();
-        return apiKey != null && apiKey.length() > 0;
+        return apiKey != null && apiKey.length() > 0 && isBuildFilePatched(project);
+    }
+
+    private boolean isBuildFilePatched(Project project) {
+        String buildFilePath = findProjectBuildFilePath(project);
+        return BuildFilePatcher.isTestfairyGradlePluginConfigured(buildFilePath);
     }
 }

@@ -19,7 +19,6 @@ public class TestFairyConsole implements com.intellij.openapi.wm.ToolWindowFacto
 
     public static void info(String s) {
         if (consoleView == null) {
-            Plugin.broadcastError("TestFairy Console not initialized.");
             return;
         }
         consoleView.print(s + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
@@ -27,7 +26,6 @@ public class TestFairyConsole implements com.intellij.openapi.wm.ToolWindowFacto
 
     public static void error(String s) {
         if (consoleView == null) {
-            Plugin.broadcastError("TestFairy Console not initialized.");
             return;
         }
         consoleView.print(s + "\n", ConsoleViewContentType.ERROR_OUTPUT);
@@ -35,7 +33,6 @@ public class TestFairyConsole implements com.intellij.openapi.wm.ToolWindowFacto
 
     public static void clear() {
         if (consoleView == null) {
-            Plugin.broadcastError("TestFairy Console not initialized.");
             return;
         }
         consoleView.clear();
