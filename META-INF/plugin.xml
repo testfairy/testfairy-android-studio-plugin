@@ -25,7 +25,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
 
-        <toolWindow id="TestFairy" icon="/testfairy.png" anchor="bottom" factoryClass="com.testfairy.plugin.intellij.ToolWindowFactory">
+        <toolWindow id="TestFairy" icon="/testfairy.png" anchor="bottom" factoryClass="com.testfairy.plugin.intellij.TestFairyConsole">
 
         </toolWindow>
     </extensions>

@@ -2,9 +2,6 @@ package com.testfairy.plugin.intellij;
 
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.browsers.BrowserLauncher;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -12,14 +9,13 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.wm.WindowManager;
 import com.intellij.util.ArrayUtil;
 import com.testfairy.plugin.intellij.exception.TestFairyException;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnectionException;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
-import org.kohsuke.rngom.ast.builder.BuildException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.URI;
@@ -28,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.lang.InterruptedException;
-import java.lang.Exception;
 
 public class BuildAndSendToTestFairy extends AnAction {
 
@@ -42,29 +37,38 @@ public class BuildAndSendToTestFairy extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        this.project = e.getProject();
+        try {
+            this.project = e.getProject();
+            Plugin.setProject(project);
 
-        ConfigureTestFairy configureTestFairyAction = new ConfigureTestFairy();
+            activateToolWindows();
 
-        if (!configureTestFairyAction.isConfigured()) {
-            configureTestFairyAction.execute(e.getProject());
+            ConfigureTestFairy configureTestFairyAction = new ConfigureTestFairy();
+
+            if (!configureTestFairyAction.isConfigured()) {
+                configureTestFairyAction.execute(project);
+            }
+
+            if (!configureTestFairyAction.isConfigured()) {
+                return;
+            }
+
+            testFairyConfig = configureTestFairyAction.getConfig();
+
+            execute(project);
         }
-
-        if (!configureTestFairyAction.isConfigured()) {
-            return;
+        catch(Exception exception) {
+            Plugin.logException(exception);
         }
+    }
 
-        testFairyConfig = configureTestFairyAction.getConfig();
-
-        String[] ids = ToolWindowManager.getInstance(e.getProject()).getToolWindowIds();
-
-        if(ToolWindowManager.getInstance(e.getProject()).getToolWindow("Messages") != null) {
-            ToolWindowManager.getInstance(e.getProject()).getToolWindow("Messages").activate(null);
+    private void activateToolWindows() {
+        if (ToolWindowManager.getInstance(project).getToolWindow("Messages") != null) {
+            ToolWindowManager.getInstance(project).getToolWindow("Messages").activate(null);
         }
-        ToolWindowManager.getInstance(e.getProject()).getToolWindow("Event Log").activate(null);
-        ToolWindowManager.getInstance(e.getProject()).getToolWindow("TestFairy").activate(null);
-
-        execute(e.getProject());
+        ToolWindowManager.getInstance(project).getToolWindow("Event Log").activate(null);
+        ToolWindowManager.getInstance(project).getToolWindow("TestFairy").activate(null);
+        TestFairyConsole.clear();
     }
 
     private void execute(final Project project) {
@@ -78,23 +82,26 @@ public class BuildAndSendToTestFairy extends AnAction {
                 buildFilePatcher.patchBuildFile(testFairyConfig);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Plugin.logException(e);
         }
 
         Task.Backgroundable bgTask = new Task.Backgroundable(project, "Building&Uploading to TestFairy", false) {
             public int selection;
 
-            public int getSelection(){
+            public int getSelection() {
                 return this.selection;
             }
+
             @Override
             public void run(ProgressIndicator indicator) {
+                Plugin.setIndicator(indicator);
                 indicator.setIndeterminate(true);
 
-                indicator.setText("Preparing Gradle Wrapper");
+                Plugin.logInfo("Preparing Gradle Wrapper");
                 testFairyTasks = getTestFairyTasks();
-
+                Plugin.setIndicator(null);
             }
+
             @Override
             public void onSuccess() {
 
@@ -108,20 +115,26 @@ public class BuildAndSendToTestFairy extends AnAction {
                     @Override
                     public void run(ProgressIndicator indicator) {
                         try {
+                            Plugin.setIndicator(indicator);
+
                             indicator.setIndeterminate(true);
 
                             String url = packageRelease(testFairyTasks.get(selection));
 
-                            indicator.setText("Launching Browser");
+                            Plugin.logInfo("Launching Browser");
                             launchBrowser(url);
 
-                            indicator.setText("Success");
+                            Plugin.logInfo("Success");
                             Thread.sleep(3000);
                             indicator.stop();
+                            Plugin.setIndicator(null);
+
                         } catch (InterruptedException e1) {
-                            e1.printStackTrace();
+                            Plugin.logException(e1);
                         } catch (TestFairyException tfe) {
-                            Notifications.Bus.notify(new Notification("TestFairyGroup", "TestFairy", "Invalid TestFairy API key. Please use Build/TestFairy/Settings to fix.", NotificationType.ERROR), project);
+                            Plugin.broadcastError("Invalid TestFairy API key. Please use Build/TestFairy/Settings to fix.");
+                        } catch (URISyntaxException e) {
+                            Plugin.logException(e);
                         }
                     }
                 }.queue();
@@ -173,15 +186,14 @@ public class BuildAndSendToTestFairy extends AnAction {
         String result = "";
         OutputStream outputStream;
         try {
-            ToolWindowFactory.consoleView.clear();
-             outputStream = new OutputStream() {
+            outputStream = new OutputStream() {
                 private StringBuilder string = new StringBuilder();
 
                 @Override
                 public void write(int b) throws IOException {
-                    char [] s = {(char)b};
+                    char[] s = {(char) b};
                     this.string.append((char) b);
-                    ToolWindowFactory.consoleView.print(new String(s), ConsoleViewContentType.SYSTEM_OUTPUT);
+                    TestFairyConsole.consoleView.print(new String(s), ConsoleViewContentType.SYSTEM_OUTPUT);
                 }
 
                 //Netbeans IDE automatically overrides this toString()
@@ -207,7 +219,8 @@ public class BuildAndSendToTestFairy extends AnAction {
                     throw new TestFairyException("Invalid API key. Please use Build/TestFairy/Settings to fix.");
                 }
             } catch (IllegalStateException ise) {
-                ise.printStackTrace();
+                throw new TestFairyException(ise.getMessage());
+
             }
 
             connection.close();
@@ -221,22 +234,21 @@ public class BuildAndSendToTestFairy extends AnAction {
                 }
             }
             if (result.length() == 0) {
-                System.err.println("WARNING: api URL not found in TestFairy build output");
+                Plugin.logError("TestFairy project URL not found in build output");
             }
 
             Thread.sleep(3000);
         } catch (InterruptedException e1) {
-            e1.printStackTrace();
+            Plugin.logException(e1);
         }
         return result;
     }
 
     private boolean checkInvalidAPIKey(GradleConnectionException gce) {
 
-        StringWriter writer = new StringWriter();
-        gce.printStackTrace(new PrintWriter(writer));
+        String stackTrace = Util.getStackTrace(gce);
 
-        if(writer.getBuffer().toString().contains("Invalid API key")) {
+        if (stackTrace.contains("Invalid API key")) {
             return true;
         }
 
@@ -253,16 +265,10 @@ public class BuildAndSendToTestFairy extends AnAction {
         return fileContents.contains("com.testfairy.plugins.gradle:testfairy");
     }
 
-    private void launchBrowser(String url) {
+    private void launchBrowser(String url) throws InterruptedException, URISyntaxException {
         if (url.length() < 5) return;
-        try {
-            BrowserLauncher.getInstance().browse(new URI(url));
-            Thread.sleep(3000);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        BrowserLauncher.getInstance().browse(new URI(url));
+        Thread.sleep(3000);
     }
 
 
