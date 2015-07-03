@@ -8,9 +8,13 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.testfairy.plugin.intellij.exception.AndroidModuleBuildFileNotFoundException;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ConfigureTestFairy extends AnAction {
 
@@ -26,12 +30,16 @@ public class ConfigureTestFairy extends AnAction {
 
             this.execute(project);
         }
+        catch (AndroidModuleBuildFileNotFoundException e1) {
+            Plugin.broadcastError(e1.getMessage());
+            Plugin.logException(e1);
+        }
         catch(Exception exception) {
             Plugin.logException(exception);
         }
     }
 
-    public void execute(Project project) throws IOException {
+    public void execute(Project project) throws IOException, AndroidModuleBuildFileNotFoundException {
         this.project = project;
         configure();
     }
@@ -48,14 +56,14 @@ public class ConfigureTestFairy extends AnAction {
         }
     }
 
-    private void configure() throws IOException {
+    private void configure() throws IOException, AndroidModuleBuildFileNotFoundException {
         String[] dummy = {};
         this.apiKey = Messages
                 .showInputDialog(project, "Enter your TestFairy API key", "Config", Icons.TEST_FAIRY_ICON);
         if (this.apiKey != null && this.apiKey.length() > 0) {
+            File androidBuildFile = findProjectBuildFile(project);
             persistConfig();
-            String fileToPatch = findProjectBuildFilePath(project);
-            (new BuildFilePatcher(fileToPatch)).patchBuildFile(getConfig());
+            (new BuildFilePatcher(androidBuildFile)).patchBuildFile(getConfig());
             Plugin.broadcastInfo("API Key Saved.");
         } else {
             Plugin.broadcastInfo("No API key provided.");
@@ -63,8 +71,25 @@ public class ConfigureTestFairy extends AnAction {
     }
 
     @NotNull
-    private String findProjectBuildFilePath(Project project) {
-        return project.getBasePath() + "/app/build.gradle";
+    public File findProjectBuildFile(Project project) throws AndroidModuleBuildFileNotFoundException {
+
+        String moduleName = "app";
+
+        String moduleLines[] = Util.readFileLines(new File(project.getBasePath() + "/settings.gradle"));
+
+        Pattern pattern = Pattern.compile("[']\\:(.*)[']");
+        Matcher matcher = pattern.matcher(moduleLines[0]);
+
+        while (matcher.find()) {
+            moduleName = matcher.group(1);
+        }
+
+        String buildFilePath = project.getBasePath() + "/" + moduleName + "/build.gradle";
+        File f = new File(buildFilePath);
+        if(!f.exists()) {
+            throw new AndroidModuleBuildFileNotFoundException("Could not locate build.gradle used for Android project.");
+        }
+        return f;
     }
 
     private String getApiKey() {
@@ -89,13 +114,16 @@ public class ConfigureTestFairy extends AnAction {
         return tfe;
     }
 
-    public boolean isConfigured(Project project) {
+    public boolean isConfigured(Project project) throws AndroidModuleBuildFileNotFoundException {
+        if(!isBuildFilePatched(project)){
+            return false;
+        }
         getApiKey();
-        return apiKey != null && apiKey.length() > 0 && isBuildFilePatched(project);
+        return apiKey != null && apiKey.length() > 0;
     }
 
-    private boolean isBuildFilePatched(Project project) {
-        String buildFilePath = findProjectBuildFilePath(project);
-        return BuildFilePatcher.isTestfairyGradlePluginConfigured(buildFilePath);
+    private boolean isBuildFilePatched(Project project) throws AndroidModuleBuildFileNotFoundException {
+        File androidBuildFile = findProjectBuildFile(project);
+        return BuildFilePatcher.isTestfairyGradlePluginConfigured(androidBuildFile);
     }
 }

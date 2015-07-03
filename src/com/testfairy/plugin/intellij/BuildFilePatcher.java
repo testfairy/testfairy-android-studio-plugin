@@ -4,17 +4,16 @@ import java.io.*;
 import java.util.Scanner;
 
 public class BuildFilePatcher {
-    private String fileToPatch;
+    private File fileToPatch;
 
-    public BuildFilePatcher(String fileToPatch) {
-        this.fileToPatch = fileToPatch;
+    public BuildFilePatcher(File androidBuildFile) {
+        this.fileToPatch = androidBuildFile;
     }
 
-
-    public static boolean isTestfairyGradlePluginConfigured(String buildFilePath) {
-        String fileContents = null;
+    public static boolean isTestfairyGradlePluginConfigured(File androidBuildFile) {
+        String fileContents;
         try {
-            fileContents = new Scanner(new File(buildFilePath)).useDelimiter("\\Z").next();
+            fileContents = new Scanner(androidBuildFile).useDelimiter("\\Z").next();
         } catch (FileNotFoundException e) {
             return false;
         }
@@ -22,10 +21,8 @@ public class BuildFilePatcher {
     }
 
     public void patchBuildFile(TestFairyConfig testFairyConfig) throws IOException {
-        String fileContents = new Scanner(new File(fileToPatch)).useDelimiter("\\Z").next();
 
-        String lines[] = fileContents.split("\\r?\\n");
-        String patchedFileContents = "";
+        String lines[] = Util.readFileLines(fileToPatch);
         StringWriter patched = new StringWriter();
         PrintWriter printWriter = new PrintWriter(patched);
         boolean inPatch = false;

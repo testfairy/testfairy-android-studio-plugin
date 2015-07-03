@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.ArrayUtil;
+import com.testfairy.plugin.intellij.exception.AndroidModuleBuildFileNotFoundException;
 import com.testfairy.plugin.intellij.exception.TestFairyException;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnectionException;
@@ -30,10 +31,11 @@ public class BuildAndSendToTestFairy extends AnAction {
     public final static String PASSWORD_KEY = "TestFairy api key";
     private Project project;
     private TestFairyConfig testFairyConfig;
-    private String fileToPatch;
+    private File fileToPatch;
     private BuildFilePatcher buildFilePatcher;
 
     List<String> testFairyTasks;
+    private ConfigureTestFairy configureTestFairyAction;
 
     @Override
     public void actionPerformed(AnActionEvent e) {
@@ -43,7 +45,7 @@ public class BuildAndSendToTestFairy extends AnAction {
 
             activateToolWindows();
 
-            ConfigureTestFairy configureTestFairyAction = new ConfigureTestFairy();
+            configureTestFairyAction = new ConfigureTestFairy();
 
             if (!configureTestFairyAction.isConfigured(project)) {
                 configureTestFairyAction.execute(project);
@@ -57,6 +59,10 @@ public class BuildAndSendToTestFairy extends AnAction {
             testFairyConfig = configureTestFairyAction.getConfig();
 
             execute(project);
+        }
+        catch (AndroidModuleBuildFileNotFoundException e1) {
+            Plugin.broadcastError(e1.getMessage());
+            Plugin.logException(e1);
         }
         catch(Exception exception) {
             Plugin.logException(exception);
@@ -72,9 +78,9 @@ public class BuildAndSendToTestFairy extends AnAction {
         TestFairyConsole.clear();
     }
 
-    private void execute(final Project project) {
+    private void execute(final Project project) throws AndroidModuleBuildFileNotFoundException {
         this.project = project;
-        fileToPatch = project.getBasePath() + "/app/build.gradle";
+        fileToPatch = configureTestFairyAction.findProjectBuildFile(project);
         buildFilePatcher = new BuildFilePatcher(fileToPatch);
 
 
@@ -267,7 +273,7 @@ public class BuildAndSendToTestFairy extends AnAction {
     }
 
     private boolean isTestfairyGradlePluginConfigured() throws IOException {
-        String fileContents = new Scanner(new File(fileToPatch)).useDelimiter("\\Z").next();
+        String fileContents = new Scanner(fileToPatch).useDelimiter("\\Z").next();
         return fileContents.contains("com.testfairy.plugins.gradle:testfairy");
     }
 

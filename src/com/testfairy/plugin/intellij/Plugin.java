@@ -57,7 +57,7 @@ public class Plugin implements ApplicationComponent {
         TestFairyConsole.error(s);
     }
 
-    public static void logException(Exception exception){
+    public static void logException(Throwable exception){
         TestFairyConsole.error(Util.getStackTrace(exception));
     }
 }
