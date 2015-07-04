@@ -75,7 +75,11 @@ public class ConfigureTestFairy extends AnAction {
 
         String moduleName = "app";
 
-        String moduleLines[] = Util.readFileLines(new File(project.getBasePath() + "/settings.gradle"));
+        File settingsFile = new File(project.getBasePath() + "/settings.gradle");
+        if(!settingsFile.exists()) {
+            throw new AndroidModuleBuildFileNotFoundException("Could not locate build.gradle used for Android project.");
+        }
+        String moduleLines[] = Util.readFileLines(settingsFile);
 
         Pattern pattern = Pattern.compile("[']\\:(.*)[']");
         Matcher matcher = pattern.matcher(moduleLines[0]);
