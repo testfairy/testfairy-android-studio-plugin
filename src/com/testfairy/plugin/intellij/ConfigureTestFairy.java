@@ -32,7 +32,6 @@ public class ConfigureTestFairy extends AnAction {
         }
         catch (AndroidModuleBuildFileNotFoundException e1) {
             Plugin.broadcastError(e1.getMessage());
-            Plugin.logException(e1);
         }
         catch(Exception exception) {
             Plugin.logException(exception);

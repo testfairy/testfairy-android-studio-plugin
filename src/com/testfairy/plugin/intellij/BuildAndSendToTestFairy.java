@@ -39,34 +39,41 @@ public class BuildAndSendToTestFairy extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        try {
-            this.project = e.getProject();
-            Plugin.setProject(project);
+        this.project = e.getProject();
+        Plugin.setProject(project);
 
-            activateToolWindows();
+        activateToolWindows();
 
-            configureTestFairyAction = new ConfigureTestFairy();
+        ToolWindowManager.getInstance(project).getToolWindow("TestFairy").activate(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-            if (!configureTestFairyAction.isConfigured(project)) {
-                configureTestFairyAction.execute(project);
+                    TestFairyConsole.clear();
+
+                    configureTestFairyAction = new ConfigureTestFairy();
+
+                    if (!configureTestFairyAction.isConfigured(project)) {
+                        configureTestFairyAction.execute(project);
+                    }
+
+                    if (!configureTestFairyAction.isConfigured(project)) {
+                        Plugin.broadcastError("TestFairy is not configured for this project.");
+                        return;
+                    }
+
+                    testFairyConfig = configureTestFairyAction.getConfig();
+
+                    execute(project);
+                } catch (AndroidModuleBuildFileNotFoundException e1) {
+                    Plugin.broadcastError(e1.getMessage());
+                } catch (Exception exception) {
+                    Plugin.logException(exception);
+                }
             }
+        });
 
-            if (!configureTestFairyAction.isConfigured(project)) {
-                Plugin.broadcastError("TestFairy is not configured for this project.");
-                return;
-            }
 
-            testFairyConfig = configureTestFairyAction.getConfig();
-
-            execute(project);
-        }
-        catch (AndroidModuleBuildFileNotFoundException e1) {
-            Plugin.broadcastError(e1.getMessage());
-            Plugin.logException(e1);
-        }
-        catch(Exception exception) {
-            Plugin.logException(exception);
-        }
     }
 
     private void activateToolWindows() {
@@ -74,8 +81,7 @@ public class BuildAndSendToTestFairy extends AnAction {
             ToolWindowManager.getInstance(project).getToolWindow("Messages").activate(null);
         }
         ToolWindowManager.getInstance(project).getToolWindow("Event Log").activate(null);
-        ToolWindowManager.getInstance(project).getToolWindow("TestFairy").activate(null);
-        TestFairyConsole.clear();
+
     }
 
     private void execute(final Project project) throws AndroidModuleBuildFileNotFoundException {
@@ -92,7 +98,7 @@ public class BuildAndSendToTestFairy extends AnAction {
             Plugin.logException(e);
         }
 
-        Task.Backgroundable bgTask = new Task.Backgroundable(project, "Building&Uploading to TestFairy", false) {
+        Task.Backgroundable bgTask = new Task.Backgroundable(project, "Uploading to TestFairy", false) {
             public int selection;
 
             public int getSelection() {
@@ -112,7 +118,7 @@ public class BuildAndSendToTestFairy extends AnAction {
             @Override
             public void onSuccess() {
 
-                if(testFairyTasks.size() == 0) {
+                if (testFairyTasks.size() == 0) {
                     Plugin.broadcastError("No TestFairy build tasks found.");
                     return;
                 }
@@ -123,7 +129,7 @@ public class BuildAndSendToTestFairy extends AnAction {
                     return;
                 }
 
-                new Backgroundable(project, "Building&Uploading to TestFairy", false) {
+                new Backgroundable(project, "Uploading to TestFairy", false) {
                     @Override
                     public void run(ProgressIndicator indicator) {
                         try {
@@ -133,10 +139,9 @@ public class BuildAndSendToTestFairy extends AnAction {
 
                             String url = packageRelease(testFairyTasks.get(selection));
 
-                            Plugin.logInfo("Launching Browser");
                             launchBrowser(url);
 
-                            Plugin.logInfo("Success");
+                            Plugin.logInfo("Done");
                             Thread.sleep(3000);
                             indicator.stop();
                             Plugin.setIndicator(null);
@@ -279,9 +284,8 @@ public class BuildAndSendToTestFairy extends AnAction {
 
     private void launchBrowser(String url) throws InterruptedException, URISyntaxException {
         if (url.length() < 5) return;
+        Plugin.logInfo("Launching Browser: " + url);
         BrowserLauncher.getInstance().browse(new URI(url));
         Thread.sleep(3000);
     }
-
-
 }

@@ -49,12 +49,13 @@
                icon="/testfairy.png" popup="true">
             <action id="TestFairy.UploadAction" class="com.testfairy.plugin.intellij.BuildAndSendToTestFairy"
                     icon="/testfairy.png"
-                    text="Build and Upload to TestFairy"
+                    text="Upload to TestFairy"
                     description="Deploy the apk to TestFairy for testing"/>
             <action id="TestFairy.ConfigureAction" class="com.testfairy.plugin.intellij.ConfigureTestFairy"
+                    icon="/testfairy-gear.png"
                     text="Settings"
                     description="Set TestFairy API Key"/>
-            <add-to-group group-id="BuildMenu" anchor="after" relative-to-action="AndroidMenu"/>
+            <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="AndroidMenu"/>
         </group>
         <group id="TestFairyToolbar">
             <separator/>
