@@ -12,7 +12,7 @@ At the moment, we only support Android Studio projects with settings.gradle in p
 and Android application module included on its very first line.
 
 ## Plugin Setup
-The plugin is available in [JetBrains repo](https://plugins.jetbrains.com/plugin/7845?pr=), so it can be found using Preferences/Plugins in your IDE.
+The plugin is available in [JetBrains repo](https://plugins.jetbrains.com/plugin/7845?pr=), so it can be found using Preferences/Plugins/Browse repositories in your IDE.
 
 Alternatively, you can manually install the latest release:
 
