@@ -8,8 +8,8 @@ You can install the `TestFairy Integration` plugin either manually by downloadin
 
 ## Bugs
 
-Please report problems on [GitHub Issues](https://github.com/testfairy/testfairy-android-studio-plugin/issues)
+Please report problems on [GitHub Issues](https://github.com/testfairy/testfairy-android-studio-plugin/issues).
 
 ## License
 
-Plugin and sources are available under the [Apache License](http://www.apache.org/licenses/LICENSE-2.0)
+Plugin and sources are available under the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
