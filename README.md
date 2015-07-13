@@ -1,6 +1,6 @@
 # TestFairy plugin for Android Studio / IDEA
 
-[![Build Status](https://magnum.travis-ci.com/testfairy/testfairy-android-studio-plugin.svg?token=dEpogdhSnM976NXR45qA&branch=master)](https://magnum.travis-ci.com/testfairy/testfairy-android-studio-plugin)
+[![Build Status](https://travis-ci.org/testfairy/testfairy-android-studio-plugin.svg?branch=master)](https://travis-ci.org/testfairy/testfairy-android-studio-plugin)
 
 ## Requirements
 TestFairy Integration intellij plugin has been tested on IDEA 13 and Android Studio 1.1+ (Android Studio will be used in further text for brevity).
