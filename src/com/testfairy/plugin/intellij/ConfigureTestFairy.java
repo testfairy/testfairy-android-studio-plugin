@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,8 +81,12 @@ public class ConfigureTestFairy extends AnAction {
         }
         String moduleLines[] = Util.readFileLines(settingsFile);
 
+        int i = 0;
+        while(i < moduleLines.length && moduleLines[i].trim().equals("")) {
+            i++;
+        }
         Pattern pattern = Pattern.compile("[']\\:(.*)[']");
-        Matcher matcher = pattern.matcher(moduleLines[0]);
+        Matcher matcher = pattern.matcher(moduleLines[i]);
 
         while (matcher.find()) {
             moduleName = matcher.group(1);
