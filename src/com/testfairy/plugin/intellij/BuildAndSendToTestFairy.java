@@ -2,8 +2,11 @@ package com.testfairy.plugin.intellij;
 
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.browsers.BrowserLauncher;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
@@ -225,7 +228,9 @@ public class BuildAndSendToTestFairy extends AnAction {
                     .connect();
 
             BuildLauncher build = connection.newBuild();
-            build.forTasks(task).withArguments("-PtestfairyUploadedBy=android-studio-plugin");
+            build.forTasks(task).withArguments("-PtestfairyUploadedBy=TestFairy Android Studio Integration Plugin v" +
+                    PluginManager.getPlugin(PluginManager.getPluginByClassName("com.testfairy.plugin.intellij.Plugin")).getVersion()
+                    + "");
 
             build.setStandardOutput(outputStream);
             build.setStandardError(outputStream);
