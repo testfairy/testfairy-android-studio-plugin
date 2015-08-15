@@ -225,7 +225,7 @@ public class BuildAndSendToTestFairy extends AnAction {
                     .connect();
 
             BuildLauncher build = connection.newBuild();
-            build.forTasks(task);
+            build.forTasks(task).withArguments("-PtestfairyUploadedBy=android-studio-plugin");
 
             build.setStandardOutput(outputStream);
             build.setStandardError(outputStream);
