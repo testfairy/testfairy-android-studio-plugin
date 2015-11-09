@@ -152,7 +152,7 @@ public class BuildAndSendToTestFairy extends AnAction {
                         } catch (InterruptedException e1) {
                             Plugin.logException(e1);
                         } catch (TestFairyException tfe) {
-                            Plugin.broadcastError("Invalid TestFairy API key. Please use Build/TestFairy/Settings to fix.");
+                            Plugin.broadcastError("Invalid TestFairy API key. Please use Tools/TestFairy/Settings to fix.");
                         } catch (URISyntaxException e) {
                             Plugin.logException(e);
                         }
@@ -238,7 +238,7 @@ public class BuildAndSendToTestFairy extends AnAction {
                 build.run();
             } catch (GradleConnectionException gce) {
                 if (checkInvalidAPIKey(gce)) {
-                    throw new TestFairyException("Invalid API key. Please use Build/TestFairy/Settings to fix.");
+                    throw new TestFairyException("Invalid API key. Please use Tools/TestFairy/Settings to fix.");
                 }
             } catch (IllegalStateException ise) {
                 throw new TestFairyException(ise.getMessage());
