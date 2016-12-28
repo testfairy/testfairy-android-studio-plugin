@@ -5,8 +5,6 @@ import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.Application;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
@@ -203,7 +201,7 @@ public class BuildAndSendToTestFairy extends AnAction {
     }
 
     private String packageRelease(String task) throws TestFairyException {
-        String result = "";
+        String buildUrl = "";
         OutputStream outputStream;
         try {
             outputStream = new OutputStream() {
@@ -228,9 +226,9 @@ public class BuildAndSendToTestFairy extends AnAction {
                     .connect();
 
             BuildLauncher build = connection.newBuild();
-            build.forTasks(task).withArguments("-PtestfairyUploadedBy=TestFairy Android Studio Integration Plugin v" +
-                    PluginManager.getPlugin(PluginManager.getPluginByClassName("com.testfairy.plugin.intellij.Plugin")).getVersion()
-                    + "");
+            build.forTasks(task).withArguments("-Pinstrumentation=off",
+					"-PtestfairyUploadedBy=TestFairy Android Studio Integration Plugin v" +
+                    PluginManager.getPlugin(PluginManager.getPluginByClassName("com.testfairy.plugin.intellij.Plugin")).getVersion());
 
             build.setStandardOutput(outputStream);
             build.setStandardError(outputStream);
@@ -247,26 +245,33 @@ public class BuildAndSendToTestFairy extends AnAction {
 
             connection.close();
 
-            String lines[] = outputStream.toString().split("\\r?\\n");
-            int i = lines.length;
-            while (--i >= 0) {
-                if (lines[i].startsWith("https://app.testfairy.com")) {
-                    result = lines[i];
-                    break;
-                }
-            }
-            if (result.length() == 0) {
-                Plugin.logError("TestFairy project URL not found in build output");
-            }
+			buildUrl = getBuildUrlFromGradleOutput(outputStream);
 
             Thread.sleep(3000);
         } catch (InterruptedException e1) {
             Plugin.logException(e1);
         }
-        return result;
+        return buildUrl;
     }
 
-    private boolean checkInvalidAPIKey(GradleConnectionException gce) {
+	@NotNull
+	private String getBuildUrlFromGradleOutput(OutputStream outputStream) {
+		String result = "";
+		String lines[] = outputStream.toString().split("\\r?\\n");
+		int i = lines.length;
+		while (--i >= 0) {
+			if (lines[i].startsWith("http") && lines[i].contains(".testfairy.")) {
+				result = lines[i];
+				break;
+			}
+		}
+		if (result.length() == 0) {
+			Plugin.logError("TestFairy project URL not found in build output");
+		}
+		return result;
+	}
+
+	private boolean checkInvalidAPIKey(GradleConnectionException gce) {
 
         String stackTrace = Util.getStackTrace(gce);
 
