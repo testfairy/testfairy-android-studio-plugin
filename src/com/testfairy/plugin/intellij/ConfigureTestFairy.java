@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,6 +69,13 @@ public class ConfigureTestFairy extends AnAction {
         }
     }
 
+	/**
+	 * Read gradle.settings and find first android application module.
+	 * That module's gradle.build file will be patched with TF gradle plugin stuff.
+	 * @param project
+	 * @return File gradle.build file to be patched
+	 * @throws AndroidModuleBuildFileNotFoundException
+	 */
     @NotNull
     public File findProjectBuildFile(Project project) throws AndroidModuleBuildFileNotFoundException {
 
@@ -85,14 +91,17 @@ public class ConfigureTestFairy extends AnAction {
         while(i < moduleLines.length && moduleLines[i].trim().equals("")) {
             i++;
         }
-        Pattern pattern = Pattern.compile("[']\\:(.*)[']");
+        Pattern pattern = Pattern.compile("[']\\:([^']*)[']");
         Matcher matcher = pattern.matcher(moduleLines[i]);
 
         while (matcher.find()) {
             moduleName = matcher.group(1);
+			if (isAppModule(project.getBasePath(), moduleName)) {
+				break;
+			}
         }
 
-        String buildFilePath = project.getBasePath() + "/" + moduleName + "/build.gradle";
+        String buildFilePath = getModuleBuildFilePath(project.getBasePath(), moduleName);
         File f = new File(buildFilePath);
         if(!f.exists()) {
             throw new AndroidModuleBuildFileNotFoundException("Could not locate build.gradle used for Android project.");
@@ -100,7 +109,27 @@ public class ConfigureTestFairy extends AnAction {
         return f;
     }
 
-    private String getApiKey() {
+	private boolean isAppModule(String basePath, String moduleName) {
+		File gradleBuildFile = new File(getModuleBuildFilePath(basePath, moduleName));
+
+		String fileLines[] = Util.readFileLines(gradleBuildFile);
+		String line;
+		int i = 0;
+		while(i < fileLines.length) {
+			line = fileLines[i];
+			if (line.contains("plugin") && line.contains("android")) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private String getModuleBuildFilePath(String basePath, String moduleName) {
+		return basePath + "/" + moduleName + "/build.gradle";
+	}
+
+	private String getApiKey() {
         PasswordSafeImpl passwordSafe = (PasswordSafeImpl) PasswordSafe.getInstance();
         try {
             apiKey = passwordSafe.getMemoryProvider().getPassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY);
