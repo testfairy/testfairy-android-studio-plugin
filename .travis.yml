@@ -17,3 +17,4 @@ deploy:
   file: testfairy-intellij-$TRAVIS_TAG-bin.zip
   on:
     repo: testfairy/testfairy-android-studio-plugin
+    all_branches: true
