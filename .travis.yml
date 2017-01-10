@@ -1,7 +1,7 @@
 language: java
 jdk:
   - oraclejdk7
-  
+
 before_script:
   - sh get-idea-ic.sh
   - sed -i -- "s/{{PLUGIN_VERSION}}/$TRAVIS_TAG/g" META-INF/plugin.xml
@@ -9,13 +9,11 @@ before_script:
 script:
   - ant all
   - mv TestFairyAndroidStudioPlugin.zip testfairy-intellij-$TRAVIS_TAG-bin.zip
-  
+
 deploy:
   provider: releases
   api_key:
-    secure: Z8gzTqeAOynwWAWcaSvh8Q6LG9O8ch5TQCPro0ioVyVUfkVV5Ud17uLMknbgGMb9zRuZ7hV2Jr8oSoONCYSrtzak+WCrfXrx75K6cqH02Uw2JSRjFePRiVNNMF0ap+fPX/hH+693wiBH0ziS9ZAw0zf4HOXKH6Uej8j6Axjrh8pmKRbgDOYaFQGKrUM/KixZyXrT4jn+URuRehjyIOyYHdf9jDlMPQGsQtGSE6/Vfwf4xfKLnOdQSjJhjKpO/OKtu91Q4eGLcY5JhWO8GQUSqsLUut9OZkmh3fFXwbcLb5U/8n2SDQYzjy25y3O9dn77D48GCvpk2TTt0zDVw1FHJbdKJt6r3xPYYzcaCCtQq5Z5nGXhZgxSxtBR3iIIKMA5LhsD0MfTZpkIVrGm4WaDTYftXvwFc9t2u1YHNi/yWCo8S5hndeKQrWu1fdCGXoIm8l5QHC9KE3UrNLW0kArZjzPVbGEEEaoGsJvHibnGviAsFRYVJhZpEvldrUN1qTzOXO0ncv4twm+CfLxK6xqE8bHp8mDldKWVQHq9bzFZO0hdKmzo47WchwH8mNNWqYQNEJmBaz+UiukKXJzaRKFsGqfkQZ+bi8AiakuZmHtWfQWd0OXTZ/6aAhxiLbazkAeli9SCIa40sEw8Pn+KDB2uM29pIs09xEaaBwnuO5gsJ0s=
+    secure: ypOLA2XUBVZZhEa5xSEbkn2+Qa9pOGVHVKuouE/Znq0NVgrN753j2hTe5nReR4/VF1wzKVOTrjS+8sS7O90sX4Imwlu/ZEf6coD91zN1FGJI7/JiZcy/Zo1PHMJe1Ia/yFhKPQu52X3QhFEfwIStVko4fQ0NJ2VpqyVxOXiuGo3uOZF/f17Orwmo6rnmuOHIlt+BbB07YLl7jZXOHOLe3o+WNXDUjCGt8Jf8+zlgkFyRSS/+c+54Bk4Kv3Y5kqOjP/WPaSiVyCapCEgv8nc9vi2RViX26QDiJzJzcWYQv2XEB8jMUrYCyU5pGMRwAFoFRcdoIKVZTC+nDuO9Fri+OG8hYUJ5yYjFn0e+I8X0s2jmnRDudQrScS51JChux5H2A/QBVFYmcC8rmShHvWa0qwx20EfdFk1q64Q40oy3LbmtKGtNQFWQLernhR+145d0yR4ixznu7Aj56yiciG40drc2W0dssxtt5FjElmf3HzRzuBxExRUXPIQGZ+xpf6WtlHyTGLp295COUnYj0Ma/EvgJaspgahuRi6H2WnLv1DjrMT5O1wDB2eVOb8Ybfk3dreFSP1y7KChwlcAqTwBqq3ECoCtUWR6SYv1x2BVYd3fAZ+7MRm88gBSDqY0kIRMx/mu3IvXeHugQVnkrEyeHFz//2wij+KC040AH+NDuKFw=
   file: testfairy-intellij-$TRAVIS_TAG-bin.zip
-  skip_cleanup: true
   on:
-    tags: true
-    all_branches: true
+    repo: testfairy/testfairy-android-studio-plugin
