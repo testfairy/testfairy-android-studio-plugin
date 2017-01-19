@@ -113,10 +113,7 @@ public class ConfigureTestFairy extends AnAction {
 		File gradleBuildFile = new File(getModuleBuildFilePath(basePath, moduleName));
 
 		String fileLines[] = Util.readFileLines(gradleBuildFile);
-		String line;
-		int i = 0;
-		while(i < fileLines.length) {
-			line = fileLines[i];
+		for (String line: fileLines) {
 			if (line.contains("plugin") && line.contains("android")) {
 				return true;
 			}
