@@ -9,7 +9,7 @@ before_script:
 script:
   - echo $JAVA_HOME
   - find $JAVA_HOME
-  - find /usr -name "java-7-oracle"
+  - find / -name "*java-7*"
   - ant all
   - mv TestFairyAndroidStudioPlugin.zip testfairy-intellij-$TRAVIS_TAG-bin.zip
 
