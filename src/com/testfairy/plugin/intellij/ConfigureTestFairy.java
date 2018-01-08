@@ -18,102 +18,101 @@ import java.util.regex.Pattern;
 
 public class ConfigureTestFairy extends AnAction {
 
-    private String apiKey;
-    private Project project;
-    private TestFairyConfig tfe;
+	private String apiKey;
+	private Project project;
+	private TestFairyConfig tfe;
 
-    @Override
-    public void actionPerformed(AnActionEvent e) {
-        try {
-            this.project = e.getProject();
-            Plugin.setProject(project);
+	@Override
+	public void actionPerformed(AnActionEvent e) {
+		try {
+			this.project = e.getProject();
+			Plugin.setProject(project);
 
-            this.execute(project);
-        }
-        catch (AndroidModuleBuildFileNotFoundException e1) {
-            Plugin.broadcastError(e1.getMessage());
-        }
-        catch(Exception exception) {
-            Plugin.logException(exception);
-        }
-    }
+			this.execute(project);
+		} catch (AndroidModuleBuildFileNotFoundException e1) {
+			Plugin.broadcastError(e1.getMessage());
+		} catch (Exception exception) {
+			Plugin.logException(exception);
+		}
+	}
 
-    public void execute(Project project) throws IOException, AndroidModuleBuildFileNotFoundException {
-        this.project = project;
-        configure();
-    }
+	public void execute(Project project) throws IOException, AndroidModuleBuildFileNotFoundException {
+		this.project = project;
+		configure();
+	}
 
-    private void persistConfig() {
-        PasswordSafeImpl passwordSafe = (PasswordSafeImpl) PasswordSafe.getInstance();
-        try {
-            passwordSafe.getMemoryProvider().storePassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY, apiKey);
-            passwordSafe.getMasterKeyProvider().storePassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY, apiKey);
-            tfe = null; //invalidate configuration
-        } catch (MasterPasswordUnavailableException ignored) {
-        } catch (PasswordSafeException e) {
-            Plugin.broadcastError("Couldn't save API key due to IDE error.");
-        }
-    }
+	private void persistConfig() {
+		PasswordSafeImpl passwordSafe = (PasswordSafeImpl) PasswordSafe.getInstance();
+		try {
+			passwordSafe.getMemoryProvider().storePassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY, apiKey);
+			passwordSafe.getMasterKeyProvider().storePassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY, apiKey);
+			tfe = null; //invalidate configuration
+		} catch (MasterPasswordUnavailableException ignored) {
+		} catch (PasswordSafeException e) {
+			Plugin.broadcastError("Couldn't save API key due to IDE error.");
+		}
+	}
 
-    private void configure() throws IOException, AndroidModuleBuildFileNotFoundException {
-        String[] dummy = {};
-        this.apiKey = Messages
-                .showInputDialog(project, "Enter your TestFairy API key", "Config", Icons.TEST_FAIRY_ICON);
-        if (this.apiKey != null && this.apiKey.length() > 0) {
-            File androidBuildFile = findProjectBuildFile(project);
-            persistConfig();
-            (new BuildFilePatcher(androidBuildFile)).patchBuildFile(getConfig());
-            Plugin.broadcastInfo("API Key Saved.");
-        } else {
-            Plugin.broadcastInfo("No API key provided.");
-        }
-    }
+	private void configure() throws IOException, AndroidModuleBuildFileNotFoundException {
+		String[] dummy = {};
+		this.apiKey = Messages
+			.showInputDialog(project, "Enter your TestFairy API key", "Config", Icons.TEST_FAIRY_ICON);
+		if (this.apiKey != null && this.apiKey.length() > 0) {
+			File androidBuildFile = findProjectBuildFile(project);
+			persistConfig();
+			(new BuildFilePatcher(androidBuildFile)).patchBuildFile(getConfig());
+			Plugin.broadcastInfo("API Key Saved.");
+		} else {
+			Plugin.broadcastInfo("No API key provided.");
+		}
+	}
 
 	/**
 	 * Read gradle.settings and find first android application module.
 	 * That module's gradle.build file will be patched with TF gradle plugin stuff.
+	 *
 	 * @param project
 	 * @return File gradle.build file to be patched
 	 * @throws AndroidModuleBuildFileNotFoundException
 	 */
-    @NotNull
-    public File findProjectBuildFile(Project project) throws AndroidModuleBuildFileNotFoundException {
+	@NotNull
+	public File findProjectBuildFile(Project project) throws AndroidModuleBuildFileNotFoundException {
 
-        String moduleName = "app";
+		String moduleName = "app";
 
-        File settingsFile = new File(project.getBasePath() + "/settings.gradle");
-        if(!settingsFile.exists()) {
-            throw new AndroidModuleBuildFileNotFoundException("Could not locate build.gradle used for Android project.");
-        }
-        String moduleLines[] = Util.readFileLines(settingsFile);
+		File settingsFile = new File(project.getBasePath() + "/settings.gradle");
+		if (!settingsFile.exists()) {
+			throw new AndroidModuleBuildFileNotFoundException("Could not locate build.gradle used for Android project.");
+		}
+		String moduleLines[] = Util.readFileLines(settingsFile);
 
-        int i = 0;
-        while(i < moduleLines.length && moduleLines[i].trim().equals("")) {
-            i++;
-        }
-        Pattern pattern = Pattern.compile("[']\\:([^']*)[']");
-        Matcher matcher = pattern.matcher(moduleLines[i]);
+		int i = 0;
+		while (i < moduleLines.length && moduleLines[i].trim().equals("")) {
+			i++;
+		}
+		Pattern pattern = Pattern.compile("[']\\:([^']*)[']");
+		Matcher matcher = pattern.matcher(moduleLines[i]);
 
-        while (matcher.find()) {
-            moduleName = matcher.group(1);
+		while (matcher.find()) {
+			moduleName = matcher.group(1);
 			if (isAppModule(project.getBasePath(), moduleName)) {
 				break;
 			}
-        }
+		}
 
-        String buildFilePath = getModuleBuildFilePath(project.getBasePath(), moduleName);
-        File f = new File(buildFilePath);
-        if(!f.exists()) {
-            throw new AndroidModuleBuildFileNotFoundException("Could not locate build.gradle used for Android project.");
-        }
-        return f;
-    }
+		String buildFilePath = getModuleBuildFilePath(project.getBasePath(), moduleName);
+		File f = new File(buildFilePath);
+		if (!f.exists()) {
+			throw new AndroidModuleBuildFileNotFoundException("Could not locate build.gradle used for Android project.");
+		}
+		return f;
+	}
 
 	private boolean isAppModule(String basePath, String moduleName) {
 		File gradleBuildFile = new File(getModuleBuildFilePath(basePath, moduleName));
 
 		String fileLines[] = Util.readFileLines(gradleBuildFile);
-		for (String line: fileLines) {
+		for (String line : fileLines) {
 			if (line.contains("plugin") && line.contains("android")) {
 				return true;
 			}
@@ -127,37 +126,37 @@ public class ConfigureTestFairy extends AnAction {
 	}
 
 	private String getApiKey() {
-        PasswordSafeImpl passwordSafe = (PasswordSafeImpl) PasswordSafe.getInstance();
-        try {
-            apiKey = passwordSafe.getMemoryProvider().getPassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY);
-            if (apiKey == null || apiKey.length() == 0) {
-                apiKey = passwordSafe.getMasterKeyProvider().getPassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY);
-            }
-        } catch (MasterPasswordUnavailableException ignored) {
-        } catch (PasswordSafeException e) {
-            Plugin.broadcastError("Couldn't save API key due to IDE error.");
-        }
-        return apiKey;
-    }
+		PasswordSafeImpl passwordSafe = (PasswordSafeImpl) PasswordSafe.getInstance();
+		try {
+			apiKey = passwordSafe.getMemoryProvider().getPassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY);
+			if (apiKey == null || apiKey.length() == 0) {
+				apiKey = passwordSafe.getMasterKeyProvider().getPassword(project, this.getClass(), BuildAndSendToTestFairy.PASSWORD_KEY);
+			}
+		} catch (MasterPasswordUnavailableException ignored) {
+		} catch (PasswordSafeException e) {
+			Plugin.broadcastError("Couldn't save API key due to IDE error.");
+		}
+		return apiKey;
+	}
 
-    public TestFairyConfig getConfig() {
-        if (tfe == null) {
-            tfe = new TestFairyConfig();
-            tfe.apiKey(this.getApiKey());
-        }
-        return tfe;
-    }
+	public TestFairyConfig getConfig() {
+		if (tfe == null) {
+			tfe = new TestFairyConfig();
+			tfe.apiKey(this.getApiKey());
+		}
+		return tfe;
+	}
 
-    public boolean isConfigured(Project project) throws AndroidModuleBuildFileNotFoundException {
-        if(!isBuildFilePatched(project)){
-            return false;
-        }
-        getApiKey();
-        return apiKey != null && apiKey.length() > 0;
-    }
+	public boolean isConfigured(Project project) throws AndroidModuleBuildFileNotFoundException {
+		if (!isBuildFilePatched(project)) {
+			return false;
+		}
+		getApiKey();
+		return apiKey != null && apiKey.length() > 0;
+	}
 
-    private boolean isBuildFilePatched(Project project) throws AndroidModuleBuildFileNotFoundException {
-        File androidBuildFile = findProjectBuildFile(project);
-        return BuildFilePatcher.isTestfairyGradlePluginConfigured(androidBuildFile);
-    }
+	private boolean isBuildFilePatched(Project project) throws AndroidModuleBuildFileNotFoundException {
+		File androidBuildFile = findProjectBuildFile(project);
+		return BuildFilePatcher.isTestfairyGradlePluginConfigured(androidBuildFile);
+	}
 }

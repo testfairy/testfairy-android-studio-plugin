@@ -29,230 +29,230 @@ import java.lang.InterruptedException;
 
 public class BuildAndSendToTestFairy extends AnAction {
 
-    public final static String PASSWORD_KEY = "TestFairy api key";
-    private Project project;
-    private TestFairyConfig testFairyConfig;
-    private File fileToPatch;
-    private BuildFilePatcher buildFilePatcher;
+	public final static String PASSWORD_KEY = "TestFairy api key";
+	private Project project;
+	private TestFairyConfig testFairyConfig;
+	private File fileToPatch;
+	private BuildFilePatcher buildFilePatcher;
 
-    List<String> testFairyTasks;
-    private ConfigureTestFairy configureTestFairyAction;
+	List<String> testFairyTasks;
+	private ConfigureTestFairy configureTestFairyAction;
 
-    @Override
-    public void actionPerformed(AnActionEvent e) {
-        this.project = e.getProject();
-        Plugin.setProject(project);
+	@Override
+	public void actionPerformed(AnActionEvent e) {
+		this.project = e.getProject();
+		Plugin.setProject(project);
 
-        activateToolWindows();
+		activateToolWindows();
 
-        ToolWindowManager.getInstance(project).getToolWindow("TestFairy").activate(new Runnable() {
-            @Override
-            public void run() {
-                try {
+		ToolWindowManager.getInstance(project).getToolWindow("TestFairy").activate(new Runnable() {
+			@Override
+			public void run() {
+				try {
 
-                    TestFairyConsole.clear();
+					TestFairyConsole.clear();
 
-                    configureTestFairyAction = new ConfigureTestFairy();
+					configureTestFairyAction = new ConfigureTestFairy();
 
-                    if (!configureTestFairyAction.isConfigured(project)) {
-                        configureTestFairyAction.execute(project);
-                    }
+					if (!configureTestFairyAction.isConfigured(project)) {
+						configureTestFairyAction.execute(project);
+					}
 
-                    if (!configureTestFairyAction.isConfigured(project)) {
-                        Plugin.broadcastError("TestFairy is not configured for this project.");
-                        return;
-                    }
+					if (!configureTestFairyAction.isConfigured(project)) {
+						Plugin.broadcastError("TestFairy is not configured for this project.");
+						return;
+					}
 
-                    testFairyConfig = configureTestFairyAction.getConfig();
+					testFairyConfig = configureTestFairyAction.getConfig();
 
-                    execute(project);
-                } catch (AndroidModuleBuildFileNotFoundException e1) {
-                    Plugin.broadcastError(e1.getMessage());
-                } catch (Exception exception) {
-                    Plugin.logException(exception);
-                }
-            }
-        });
-
-
-    }
-
-    private void activateToolWindows() {
-        if (ToolWindowManager.getInstance(project).getToolWindow("Messages") != null) {
-            ToolWindowManager.getInstance(project).getToolWindow("Messages").activate(null);
-        }
-        ToolWindowManager.getInstance(project).getToolWindow("Event Log").activate(null);
-
-    }
-
-    private void execute(final Project project) throws AndroidModuleBuildFileNotFoundException {
-        this.project = project;
-        fileToPatch = configureTestFairyAction.findProjectBuildFile(project);
-        buildFilePatcher = new BuildFilePatcher(fileToPatch);
+					execute(project);
+				} catch (AndroidModuleBuildFileNotFoundException e1) {
+					Plugin.broadcastError(e1.getMessage());
+				} catch (Exception exception) {
+					Plugin.logException(exception);
+				}
+			}
+		});
 
 
-        try {
-            if (!isTestfairyGradlePluginConfigured()) {
-                buildFilePatcher.patchBuildFile(testFairyConfig);
-            }
-        } catch (IOException e) {
-            Plugin.logException(e);
-        }
+	}
 
-        Task.Backgroundable bgTask = new Task.Backgroundable(project, "Uploading to TestFairy", false) {
-            public int selection;
+	private void activateToolWindows() {
+		if (ToolWindowManager.getInstance(project).getToolWindow("Messages") != null) {
+			ToolWindowManager.getInstance(project).getToolWindow("Messages").activate(null);
+		}
+		ToolWindowManager.getInstance(project).getToolWindow("Event Log").activate(null);
 
-            public int getSelection() {
-                return this.selection;
-            }
+	}
 
-            @Override
-            public void run(ProgressIndicator indicator) {
-                Plugin.setIndicator(indicator);
-                indicator.setIndeterminate(true);
-
-                Plugin.logInfo("Preparing Gradle Wrapper");
-                testFairyTasks = getTestFairyTasks();
-                Plugin.setIndicator(null);
-            }
-
-            @Override
-            public void onSuccess() {
-
-                if (testFairyTasks.size() == 0) {
-                    Plugin.broadcastError("No TestFairy build tasks found.");
-                    return;
-                }
-
-                selection = Messages.showChooseDialog(
-                        "Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
-                if (selection == -1) {
-                    return;
-                }
-
-                new Backgroundable(project, "Uploading to TestFairy", false) {
-                    @Override
-                    public void run(ProgressIndicator indicator) {
-                        try {
-                            Plugin.setIndicator(indicator);
-
-                            indicator.setIndeterminate(true);
-
-                            String url = packageRelease(testFairyTasks.get(selection));
-
-                            launchBrowser(url);
-
-                            Plugin.logInfo("Done");
-                            Thread.sleep(3000);
-                            indicator.stop();
-                            Plugin.setIndicator(null);
-
-                        } catch (InterruptedException e1) {
-                            Plugin.logException(e1);
-                        } catch (TestFairyException tfe) {
-                            Plugin.broadcastError("Invalid TestFairy API key. Please use Tools/TestFairy/Settings to fix.");
-                        } catch (URISyntaxException e) {
-                            Plugin.logException(e);
-                        }
-                    }
-                }.queue();
-            }
-
-        };
-        bgTask.queue();
+	private void execute(final Project project) throws AndroidModuleBuildFileNotFoundException {
+		this.project = project;
+		fileToPatch = configureTestFairyAction.findProjectBuildFile(project);
+		buildFilePatcher = new BuildFilePatcher(fileToPatch);
 
 
-    }
+		try {
+			if (!isTestfairyGradlePluginConfigured()) {
+				buildFilePatcher.patchBuildFile(testFairyConfig);
+			}
+		} catch (IOException e) {
+			Plugin.logException(e);
+		}
 
-    private List<String> getTestFairyTasks() {
-        List<String> tasks = new ArrayList<String>();
+		Task.Backgroundable bgTask = new Task.Backgroundable(project, "Uploading to TestFairy", false) {
+			public int selection;
 
-        OutputStream outputStream = new OutputStream() {
-            private StringBuilder string = new StringBuilder();
+			public int getSelection() {
+				return this.selection;
+			}
 
-            @Override
-            public void write(int b) throws IOException {
-                this.string.append((char) b);
-            }
+			@Override
+			public void run(ProgressIndicator indicator) {
+				Plugin.setIndicator(indicator);
+				indicator.setIndeterminate(true);
 
-            //Netbeans IDE automatically overrides this toString()
-            public String toString() {
-                return this.string.toString();
-            }
-        };
+				Plugin.logInfo("Preparing Gradle Wrapper");
+				testFairyTasks = getTestFairyTasks();
+				Plugin.setIndicator(null);
+			}
 
-        ProjectConnection connection = GradleConnector.newConnector()
-                .forProjectDirectory(getProjectDirectoryFile())
-                .connect();
+			@Override
+			public void onSuccess() {
 
-        BuildLauncher buildLauncher = connection.newBuild();
-        buildLauncher.forTasks(":tasks");
+				if (testFairyTasks.size() == 0) {
+					Plugin.broadcastError("No TestFairy build tasks found.");
+					return;
+				}
 
-        buildLauncher.setStandardOutput(outputStream);
-        buildLauncher.run();
+				selection = Messages.showChooseDialog(
+					"Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
+				if (selection == -1) {
+					return;
+				}
 
-        for (String line : outputStream.toString().split("\\r?\\n")) {
-            if (line.startsWith("testfairy")) {
-                tasks.add(line.split(" ")[0]);
-            }
-        }
+				new Backgroundable(project, "Uploading to TestFairy", false) {
+					@Override
+					public void run(ProgressIndicator indicator) {
+						try {
+							Plugin.setIndicator(indicator);
 
-        return tasks;
-    }
+							indicator.setIndeterminate(true);
 
-    private String packageRelease(String task) throws TestFairyException {
-        String buildUrl = "";
-        OutputStream outputStream;
-        try {
-            outputStream = new OutputStream() {
-                private StringBuilder string = new StringBuilder();
+							String url = packageRelease(testFairyTasks.get(selection));
 
-                @Override
-                public void write(int b) throws IOException {
-                    char[] s = {(char) b};
-                    this.string.append((char) b);
-                    TestFairyConsole.consoleView.print(new String(s), ConsoleViewContentType.SYSTEM_OUTPUT);
-                }
+							launchBrowser(url);
 
-                //Netbeans IDE automatically overrides this toString()
-                public String toString() {
-                    return this.string.toString();
-                }
-            };
+							Plugin.logInfo("Done");
+							Thread.sleep(3000);
+							indicator.stop();
+							Plugin.setIndicator(null);
 
-            ProjectConnection connection;
-            connection = GradleConnector.newConnector()
-                    .forProjectDirectory(getProjectDirectoryFile())
-                    .connect();
+						} catch (InterruptedException e1) {
+							Plugin.logException(e1);
+						} catch (TestFairyException tfe) {
+							Plugin.broadcastError("Invalid TestFairy API key. Please use Tools/TestFairy/Settings to fix.");
+						} catch (URISyntaxException e) {
+							Plugin.logException(e);
+						}
+					}
+				}.queue();
+			}
 
-            BuildLauncher build = connection.newBuild();
-            build.forTasks(task).withArguments("-Pinstrumentation=off",
-					"-PtestfairyUploadedBy=TestFairy Android Studio Integration Plugin v" +
-                    PluginManager.getPlugin(PluginManager.getPluginByClassName("com.testfairy.plugin.intellij.Plugin")).getVersion());
+		};
+		bgTask.queue();
 
-            build.setStandardOutput(outputStream);
-            build.setStandardError(outputStream);
-            try {
-                build.run();
-            } catch (GradleConnectionException gce) {
-                if (checkInvalidAPIKey(gce)) {
-                    throw new TestFairyException("Invalid API key. Please use Tools/TestFairy/Settings to fix.");
-                }
-            } catch (IllegalStateException ise) {
-                throw new TestFairyException(ise.getMessage());
 
-            }
+	}
 
-            connection.close();
+	private List<String> getTestFairyTasks() {
+		List<String> tasks = new ArrayList<String>();
+
+		OutputStream outputStream = new OutputStream() {
+			private StringBuilder string = new StringBuilder();
+
+			@Override
+			public void write(int b) throws IOException {
+				this.string.append((char) b);
+			}
+
+			//Netbeans IDE automatically overrides this toString()
+			public String toString() {
+				return this.string.toString();
+			}
+		};
+
+		ProjectConnection connection = GradleConnector.newConnector()
+			.forProjectDirectory(getProjectDirectoryFile())
+			.connect();
+
+		BuildLauncher buildLauncher = connection.newBuild();
+		buildLauncher.forTasks(":tasks");
+
+		buildLauncher.setStandardOutput(outputStream);
+		buildLauncher.run();
+
+		for (String line : outputStream.toString().split("\\r?\\n")) {
+			if (line.startsWith("testfairy")) {
+				tasks.add(line.split(" ")[0]);
+			}
+		}
+
+		return tasks;
+	}
+
+	private String packageRelease(String task) throws TestFairyException {
+		String buildUrl = "";
+		OutputStream outputStream;
+		try {
+			outputStream = new OutputStream() {
+				private StringBuilder string = new StringBuilder();
+
+				@Override
+				public void write(int b) throws IOException {
+					char[] s = {(char) b};
+					this.string.append((char) b);
+					TestFairyConsole.consoleView.print(new String(s), ConsoleViewContentType.SYSTEM_OUTPUT);
+				}
+
+				//Netbeans IDE automatically overrides this toString()
+				public String toString() {
+					return this.string.toString();
+				}
+			};
+
+			ProjectConnection connection;
+			connection = GradleConnector.newConnector()
+				.forProjectDirectory(getProjectDirectoryFile())
+				.connect();
+
+			BuildLauncher build = connection.newBuild();
+			build.forTasks(task).withArguments("-Pinstrumentation=off",
+				"-PtestfairyUploadedBy=TestFairy Android Studio Integration Plugin v" +
+					PluginManager.getPlugin(PluginManager.getPluginByClassName("com.testfairy.plugin.intellij.Plugin")).getVersion());
+
+			build.setStandardOutput(outputStream);
+			build.setStandardError(outputStream);
+			try {
+				build.run();
+			} catch (GradleConnectionException gce) {
+				if (checkInvalidAPIKey(gce)) {
+					throw new TestFairyException("Invalid API key. Please use Tools/TestFairy/Settings to fix.");
+				}
+			} catch (IllegalStateException ise) {
+				throw new TestFairyException(ise.getMessage());
+
+			}
+
+			connection.close();
 
 			buildUrl = getBuildUrlFromGradleOutput(outputStream);
 
-            Thread.sleep(3000);
-        } catch (InterruptedException e1) {
-            Plugin.logException(e1);
-        }
-        return buildUrl;
-    }
+			Thread.sleep(3000);
+		} catch (InterruptedException e1) {
+			Plugin.logException(e1);
+		}
+		return buildUrl;
+	}
 
 	@NotNull
 	private String getBuildUrlFromGradleOutput(OutputStream outputStream) {
@@ -273,29 +273,29 @@ public class BuildAndSendToTestFairy extends AnAction {
 
 	private boolean checkInvalidAPIKey(GradleConnectionException gce) {
 
-        String stackTrace = Util.getStackTrace(gce);
+		String stackTrace = Util.getStackTrace(gce);
 
-        if (stackTrace.contains("Invalid API key")) {
-            return true;
-        }
+		if (stackTrace.contains("Invalid API key")) {
+			return true;
+		}
 
-        return false;
+		return false;
 
-    }
+	}
 
-    private File getProjectDirectoryFile() {
-        return new File(project.getBasePath());
-    }
+	private File getProjectDirectoryFile() {
+		return new File(project.getBasePath());
+	}
 
-    private boolean isTestfairyGradlePluginConfigured() throws IOException {
-        String fileContents = new Scanner(fileToPatch).useDelimiter("\\Z").next();
-        return fileContents.contains("com.testfairy.plugins.gradle:testfairy");
-    }
+	private boolean isTestfairyGradlePluginConfigured() throws IOException {
+		String fileContents = new Scanner(fileToPatch).useDelimiter("\\Z").next();
+		return fileContents.contains("com.testfairy.plugins.gradle:testfairy");
+	}
 
-    private void launchBrowser(String url) throws InterruptedException, URISyntaxException {
-        if (url.length() < 5) return;
-        Plugin.logInfo("Launching Browser: " + url);
-        BrowserLauncher.getInstance().browse(new URI(url));
-        Thread.sleep(3000);
-    }
+	private void launchBrowser(String url) throws InterruptedException, URISyntaxException {
+		if (url.length() < 5) return;
+		Plugin.logInfo("Launching Browser: " + url);
+		BrowserLauncher.getInstance().browse(new URI(url));
+		Thread.sleep(3000);
+	}
 }

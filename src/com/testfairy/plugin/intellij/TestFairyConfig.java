@@ -19,9 +19,6 @@ class TestFairyConfig {
 
 	private String serverEndpoint = "https://app.testfairy.com";
 
-	TestFairyConfig() {
-	}
-
 	void apiKey(String value) {
 		this.apiKey = value;
 	}
@@ -126,11 +123,11 @@ class TestFairyConfig {
 		return recordOnBackground;
 	}
 
-	void uploadProguardMapping(Boolean value){
+	void uploadProguardMapping(Boolean value) {
 		this.uploadProguardMapping = value;
 	}
 
-	Boolean getUploadProguardMapping(){
+	Boolean getUploadProguardMapping() {
 		return uploadProguardMapping;
 	}
 }
