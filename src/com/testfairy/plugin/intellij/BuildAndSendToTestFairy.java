@@ -19,22 +19,17 @@ import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.lang.InterruptedException;
 
 public class BuildAndSendToTestFairy extends AnAction {
 
-	public final static String PASSWORD_KEY = "TestFairy api key";
 	private Project project;
-	private TestFairyConfig testFairyConfig;
-	private File fileToPatch;
-	private BuildFilePatcher buildFilePatcher;
-
 	List<String> testFairyTasks;
 	private ConfigureTestFairy configureTestFairyAction;
 
@@ -54,18 +49,17 @@ public class BuildAndSendToTestFairy extends AnAction {
 
 					configureTestFairyAction = new ConfigureTestFairy();
 
-					if (!configureTestFairyAction.isConfigured(project)) {
+					if (!configureTestFairyAction.isBuildFilePatched(project)) {
 						configureTestFairyAction.execute(project);
 					}
 
-					if (!configureTestFairyAction.isConfigured(project)) {
+					if (!configureTestFairyAction.isBuildFilePatched(project)) {
 						Plugin.broadcastError("TestFairy is not configured for this project.");
 						return;
 					}
 
-					testFairyConfig = configureTestFairyAction.getConfig();
-
 					execute(project);
+
 				} catch (AndroidModuleBuildFileNotFoundException e1) {
 					Plugin.broadcastError(e1.getMessage());
 				} catch (Exception exception) {
@@ -73,11 +67,10 @@ public class BuildAndSendToTestFairy extends AnAction {
 				}
 			}
 		});
-
-
 	}
 
 	private void activateToolWindows() {
+
 		if (ToolWindowManager.getInstance(project).getToolWindow("Messages") != null) {
 			ToolWindowManager.getInstance(project).getToolWindow("Messages").activate(null);
 		}
@@ -86,18 +79,6 @@ public class BuildAndSendToTestFairy extends AnAction {
 	}
 
 	private void execute(final Project project) throws AndroidModuleBuildFileNotFoundException {
-		this.project = project;
-		fileToPatch = configureTestFairyAction.findProjectBuildFile(project);
-		buildFilePatcher = new BuildFilePatcher(fileToPatch);
-
-
-		try {
-			if (!isTestfairyGradlePluginConfigured()) {
-				buildFilePatcher.patchBuildFile(testFairyConfig);
-			}
-		} catch (IOException e) {
-			Plugin.logException(e);
-		}
 
 		Task.Backgroundable bgTask = new Task.Backgroundable(project, "Uploading to TestFairy", false) {
 			public int selection;
@@ -160,8 +141,6 @@ public class BuildAndSendToTestFairy extends AnAction {
 
 		};
 		bgTask.queue();
-
-
 	}
 
 	private List<String> getTestFairyTasks() {
@@ -285,11 +264,6 @@ public class BuildAndSendToTestFairy extends AnAction {
 
 	private File getProjectDirectoryFile() {
 		return new File(project.getBasePath());
-	}
-
-	private boolean isTestfairyGradlePluginConfigured() throws IOException {
-		String fileContents = new Scanner(fileToPatch).useDelimiter("\\Z").next();
-		return fileContents.contains("com.testfairy.plugins.gradle:testfairy");
 	}
 
 	private void launchBrowser(String url) throws InterruptedException, URISyntaxException {
