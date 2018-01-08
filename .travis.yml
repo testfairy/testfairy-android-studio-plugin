@@ -8,9 +8,9 @@ before_script:
 
 script:
   - echo $JAVA_HOME
-  - find $JAVA_HOME
-  - find / -name "*java-7*"
-  - find / -name java
+  - find /usr/lib/jvm/java-7-openjdk-amd64
+  - JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+  - echo $JAVA_HOME
   - ant all
   - mv TestFairyAndroidStudioPlugin.zip testfairy-intellij-$TRAVIS_TAG-bin.zip
 
