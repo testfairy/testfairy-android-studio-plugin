@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ideaVersion=""
+ideaVersion="171.3780.107"
 
 if [ ! -d ./idea-IC ]; then
     # Get our IDEA dependency
