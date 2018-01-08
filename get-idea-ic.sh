@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ideaVersion="14.1.7"
+ideaVersion=""
 
 if [ ! -d ./idea-IC ]; then
     # Get our IDEA dependency
@@ -8,13 +8,14 @@ if [ ! -d ./idea-IC ]; then
     then
         cp ~/Tools/ideaIC-${ideaVersion}.tar.gz .
     else
-        wget http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
+        wget https://github.com/JetBrains/intellij-community/archive/idea/${ideaVersion}.tar.gz
+        # wget http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
         # wget http://download.labs.intellij.net/idea/ideaIC-${ideaVersion}.tar.gz
     fi
 
     # Unzip IDEA
-    tar zxf ideaIC-${ideaVersion}.tar.gz
-    rm -rf ideaIC-${ideaVersion}.tar.gz
+    tar zxf ${ideaVersion}.tar.gz
+    rm -rf ${ideaVersion}.tar.gz
 
     # Move the versioned IDEA folder to a known location
     ideaPath=$(find . -name 'idea-IC*' | head -n 1)
