@@ -8,7 +8,7 @@ before_script:
 
 script:
   - echo $JAVA_HOME
-  - ant --help
+  - find $JAVA_HOME
   - ant all
   - mv TestFairyAndroidStudioPlugin.zip testfairy-intellij-$TRAVIS_TAG-bin.zip
 
