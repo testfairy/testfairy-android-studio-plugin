@@ -7,6 +7,8 @@ before_script:
   - sed -i -- "s/{{PLUGIN_VERSION}}/$TRAVIS_TAG/g" META-INF/plugin.xml
 
 script:
+  - echo $JAVA_HOME
+  - ant --help
   - ant all
   - mv TestFairyAndroidStudioPlugin.zip testfairy-intellij-$TRAVIS_TAG-bin.zip
 
