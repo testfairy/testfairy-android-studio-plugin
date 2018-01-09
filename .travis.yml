@@ -1,6 +1,8 @@
 language: java
-jdk:
-  - oraclejdk8
+
+install:
+ - ant deps
+
 
 before_script:
   - sh get-idea-ic.sh
