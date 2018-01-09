@@ -1,15 +1,12 @@
 language: java
 jdk:
-  - oraclejdk7
+  - oraclejdk8
 
 before_script:
   - sh get-idea-ic.sh
   - sed -i -- "s/{{PLUGIN_VERSION}}/$TRAVIS_TAG/g" META-INF/plugin.xml
 
 script:
-  - echo $JAVA_HOME
-  - find /usr/lib/jvm/java-7-openjdk-amd64
-  - JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
   - echo $JAVA_HOME
   - ant all
   - mv TestFairyAndroidStudioPlugin.zip testfairy-intellij-$TRAVIS_TAG-bin.zip
