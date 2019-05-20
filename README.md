@@ -4,7 +4,7 @@
 
 ## Installation
 
-You can install the `TestFairy Integration` plugin either manually by downloading it from the [JetBrains Plugin Repository](https://plugins.jetbrains.com/plugin/7845) or directly from within your IDE by following [these instructions] (http://docs.testfairy.com/Android/Uploading_with_Android_Studio.html).
+You can install the `TestFairy Integration` plugin either manually by downloading it from the [JetBrains Plugin Repository](https://plugins.jetbrains.com/plugin/7845) or directly from within your IDE by following [these instructions] (https://docs.testfairy.com/Android/Uploading_with_Android_Studio.html).
 
 ## Bugs
 
@@ -12,4 +12,4 @@ Please report problems on [GitHub Issues](https://github.com/testfairy/testfairy
 
 ## License
 
-Plugin and sources are available under the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
+Plugin and sources are available under the [Apache License](https://www.apache.org/licenses/LICENSE-2.0).
