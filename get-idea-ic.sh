@@ -2,7 +2,7 @@
 
 ideaVersion="14.1.7"
 
-if [ ! -d ./idea-IC ]; then
+if [ ! -d ./idea-ic ]; then
     # Get our IDEA dependency
     if [ -f ~/Tools/ideaIC-${ideaVersion}.tar.gz ];
     then

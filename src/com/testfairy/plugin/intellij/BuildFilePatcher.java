@@ -66,7 +66,7 @@ public class BuildFilePatcher {
 		patched.println("       maven { url 'https://www.testfairy.com/maven' }");
 		patched.println("   }");
 		patched.println("   dependencies {");
-		patched.println("       classpath 'com.testfairy.plugins.gradle:testfairy:2.+'");
+		patched.println("       classpath 'com.testfairy.plugins.gradle:testfairy:3.+'");
 		patched.println("   }");
 		patched.println("}");
 		patched.println("apply plugin: 'testfairy'");
