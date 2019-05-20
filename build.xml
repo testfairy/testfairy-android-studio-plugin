@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="testfairy-android-studio-plugin" default="all">
-  
-  
+
   <property file="build.properties"/>
 
   <!-- Set jdk.home if not specified in build.properties. -->
@@ -11,7 +10,7 @@
     </not>
   </condition>
   <!-- Uncomment the following property if no tests compilation is needed -->
-  <!-- 
+  <!--
   <property name="skip.tests" value="true"/>
    -->
   
