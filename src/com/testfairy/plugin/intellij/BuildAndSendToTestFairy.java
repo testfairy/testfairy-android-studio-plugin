@@ -22,10 +22,13 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.testfairy.plugin.intellij.Util.*;
 
 public class BuildAndSendToTestFairy extends AnAction {
 
@@ -161,14 +164,14 @@ public class BuildAndSendToTestFairy extends AnAction {
 		};
 
 		ProjectConnection connection = GradleConnector.newConnector()
-			.forProjectDirectory(getProjectDirectoryFile())
-			.connect();
+				.forProjectDirectory(getProjectDirectoryFile())
+				.connect();
 
 		BuildLauncher buildLauncher = connection.newBuild();
 		buildLauncher.forTasks(":tasks");
 
-		buildLauncher.setStandardOutput(outputStream);
-		buildLauncher.run();
+		setStandardOutputOfBuildLauncher(buildLauncher, outputStream);
+		runBuildLauncher(buildLauncher);
 
 		for (String line : outputStream.toString().split("\\r?\\n")) {
 			if (line.startsWith("testfairy")) {
@@ -205,14 +208,16 @@ public class BuildAndSendToTestFairy extends AnAction {
 				.connect();
 
 			BuildLauncher build = connection.newBuild();
-			build.forTasks(task).withArguments("-Pinstrumentation=off",
+
+			withArgumentsBuildLauncher(build.forTasks(task), "-Pinstrumentation=off",
 				"-PtestfairyUploadedBy=TestFairy Android Studio Integration Plugin v" +
 					PluginManager.getPlugin(PluginManager.getPluginByClassName("com.testfairy.plugin.intellij.Plugin")).getVersion());
 
-			build.setStandardOutput(outputStream);
-			build.setStandardError(outputStream);
+			setStandardOutputOfBuildLauncher(build, outputStream);
+			setStandardErrorOfBuildLauncher(build, outputStream);
+
 			try {
-				build.run();
+				runBuildLauncher(build);
 			} catch (GradleConnectionException gce) {
 				if (checkInvalidAPIKey(gce)) {
 					throw new TestFairyException("Invalid API key. Please use Tools/TestFairy/Settings to fix.");
