@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk11
+  - oraclejdk12
 
 before_script:
   - sh get-idea-ic.sh
