@@ -31,11 +31,11 @@ public class Util {
 			Method setStandardOutput = getMethodWithName(buildLauncher.getClass(), "setStandardOutput");
 			return (T) setStandardOutput.invoke(buildLauncher, outputStream);
 		} catch (IllegalAccessException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardOutput with reflection", t);
 		} catch (IllegalArgumentException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardOutput with reflection", t);
 		} catch (InvocationTargetException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardOutput with reflection", t);
 		}
 	}
 
@@ -57,11 +57,11 @@ public class Util {
 		try {
 			run.invoke(buildLauncher);
 		} catch (IllegalAccessException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.run with reflection", t);
 		} catch (IllegalArgumentException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.run with reflection", t);
 		} catch (InvocationTargetException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.run with reflection", t);
 		}
 	}
 
@@ -70,11 +70,11 @@ public class Util {
 		try {
 			return (T) withArguments.invoke(buildLauncher, new Object[] { strs });
 		} catch (IllegalAccessException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.withArguments with reflection", t);
 		} catch (IllegalArgumentException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.withArguments with reflection", t);
 		} catch (InvocationTargetException t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+			throw new RuntimeException("Cannot call BuildLauncher.withArguments with reflection", t);
 		}
 	}
 
