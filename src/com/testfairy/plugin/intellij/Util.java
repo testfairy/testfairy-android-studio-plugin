@@ -4,6 +4,7 @@ import org.gradle.tooling.BuildLauncher;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Scanner;
 
@@ -29,8 +30,12 @@ public class Util {
 		try {
 			Method setStandardOutput = getMethodWithName(buildLauncher.getClass(), "setStandardOutput");
 			return (T) setStandardOutput.invoke(buildLauncher, outputStream);
-		} catch (Throwable t) {
-			throw new RuntimeException("Cannot call BuildLauncher.setStandardOutput with reflection", t);
+		} catch (IllegalAccessException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+		} catch (IllegalArgumentException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+		} catch (InvocationTargetException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
 		}
 	}
 
@@ -38,7 +43,11 @@ public class Util {
 		try {
 			Method setStandardError = getMethodWithName(buildLauncher.getClass(), "setStandardError");
 			return (T) setStandardError.invoke(buildLauncher, outputStream);
-		} catch (Throwable t) {
+		} catch (IllegalAccessException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+		} catch (IllegalArgumentException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+		} catch (InvocationTargetException t) {
 			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
 		}
 	}
@@ -47,8 +56,12 @@ public class Util {
 		Method run = getMethodWithName(buildLauncher.getClass(), "run", 0);
 		try {
 			run.invoke(buildLauncher);
-		} catch (Throwable t) {
-			throw new RuntimeException("Cannot call BuildLauncher.run with reflection", t);
+		} catch (IllegalAccessException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+		} catch (IllegalArgumentException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+		} catch (InvocationTargetException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
 		}
 	}
 
@@ -56,8 +69,12 @@ public class Util {
 		Method withArguments = getMethodWithNameVarArgs(buildLauncher.getClass(), "withArguments", String[].class);
 		try {
 			return (T) withArguments.invoke(buildLauncher, new Object[] { strs });
-		} catch (Throwable t) {
-			throw new RuntimeException("Cannot call BuildLauncher.withArguments with reflection", t);
+		} catch (IllegalAccessException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+		} catch (IllegalArgumentException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
+		} catch (InvocationTargetException t) {
+			throw new RuntimeException("Cannot call BuildLauncher.setStandardError with reflection", t);
 		}
 	}
 
