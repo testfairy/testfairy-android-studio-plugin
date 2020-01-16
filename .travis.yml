@@ -1,6 +1,7 @@
+dist: trusty
 language: java
 jdk:
-  - oraclejdk9
+  - openjdk7
 
 before_script:
   - sh get-idea-ic.sh
