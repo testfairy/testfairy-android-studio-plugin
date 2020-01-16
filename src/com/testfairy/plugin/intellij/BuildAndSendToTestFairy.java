@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ import static com.testfairy.plugin.intellij.Util.*;
 public class BuildAndSendToTestFairy extends AnAction {
 
 	private Project project;
-	List<String> testFairyTasks;
+	private List<String> testFairyTasks;
 	private ConfigureTestFairy configureTestFairyAction;
 
 	@Override
@@ -73,16 +72,13 @@ public class BuildAndSendToTestFairy extends AnAction {
 	}
 
 	private void activateToolWindows() {
-
 		if (ToolWindowManager.getInstance(project).getToolWindow("Messages") != null) {
 			ToolWindowManager.getInstance(project).getToolWindow("Messages").activate(null);
 		}
 		ToolWindowManager.getInstance(project).getToolWindow("Event Log").activate(null);
-
 	}
 
 	private void execute(final Project project) throws AndroidModuleBuildFileNotFoundException {
-
 		Task.Backgroundable bgTask = new Task.Backgroundable(project, "Uploading to TestFairy", false) {
 			public int selection;
 
@@ -102,14 +98,19 @@ public class BuildAndSendToTestFairy extends AnAction {
 
 			@Override
 			public void onSuccess() {
-
 				if (testFairyTasks.size() == 0) {
 					Plugin.broadcastError("No TestFairy build tasks found.");
 					return;
 				}
 
 				selection = Messages.showChooseDialog(
-					"Select a build target for APK", "Build Target", ArrayUtil.toStringArray(testFairyTasks), testFairyTasks.get(0), Icons.TEST_FAIRY_ICON);
+					"Select what you want to do",
+						"TestFairy",
+						getTestFairyTaskExplanations(),
+						testFairyTasks.get(0),
+						Icons.TESTFAIRY_ICON
+				);
+
 				if (selection == -1) {
 					return;
 				}
@@ -178,6 +179,8 @@ public class BuildAndSendToTestFairy extends AnAction {
 				tasks.add(line.split(" ")[0]);
 			}
 		}
+
+		// TODO : sort these task in a user friendly way
 
 		return tasks;
 	}
@@ -256,7 +259,6 @@ public class BuildAndSendToTestFairy extends AnAction {
 	}
 
 	private boolean checkInvalidAPIKey(GradleConnectionException gce) {
-
 		String stackTrace = Util.getStackTrace(gce);
 
 		if (stackTrace.contains("Invalid API key")) {
@@ -264,7 +266,6 @@ public class BuildAndSendToTestFairy extends AnAction {
 		}
 
 		return false;
-
 	}
 
 	private File getProjectDirectoryFile() {
@@ -276,5 +277,19 @@ public class BuildAndSendToTestFairy extends AnAction {
 		Plugin.logInfo("Launching Browser: " + url);
 		BrowserLauncher.getInstance().browse(new URI(url));
 		Thread.sleep(3000);
+	}
+
+	private String[] getTestFairyTaskExplanations() {
+		List<String> explanations = new ArrayList<String>();
+
+		for (String task : testFairyTasks) {
+			if (!task.startsWith("testfairyNdk")) {
+				explanations.add("Build '" + task.replaceFirst("testfairy", "") + "' variant and send APK to TestFairy");
+			} else {
+				explanations.add("Send '" + task.replaceFirst("testfairyNdk", "") + "' symbols to TestFairy to symbolicate native crashes");
+			}
+		}
+
+		return ArrayUtil.toStringArray(explanations);
 	}
 }

@@ -37,8 +37,7 @@ public class ConfigureTestFairy extends AnAction {
 	}
 
 	private void configure() throws IOException, AndroidModuleBuildFileNotFoundException {
-
-		this.apiKey = Messages.showInputDialog(project, "Enter your TestFairy API key", "Config", Icons.TEST_FAIRY_ICON);
+		this.apiKey = Messages.showInputDialog(project, "Enter your TestFairy API key", "Config", Icons.TESTFAIRY_ICON);
 
 		if (this.apiKey != null && this.apiKey.length() > 0) {
 			File androidBuildFile = findProjectBuildFile(project);
@@ -60,7 +59,6 @@ public class ConfigureTestFairy extends AnAction {
 	 */
 	@NotNull
 	public File findProjectBuildFile(Project project) throws AndroidModuleBuildFileNotFoundException {
-
 		String moduleName = "app";
 
 		File settingsFile = new File(project.getBasePath() + "/settings.gradle");
@@ -111,7 +109,6 @@ public class ConfigureTestFairy extends AnAction {
 	}
 
 	public boolean isBuildFilePatched(Project project) throws AndroidModuleBuildFileNotFoundException {
-
 		File androidBuildFile = findProjectBuildFile(project);
 		return BuildFilePatcher.isTestfairyGradlePluginConfigured(androidBuildFile);
 	}

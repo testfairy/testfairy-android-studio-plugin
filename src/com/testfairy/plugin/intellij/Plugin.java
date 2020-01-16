@@ -13,14 +13,10 @@ public class Plugin implements ApplicationComponent {
 	private static Project project;
 
 	@Override
-	public void initComponent() {
-
-	}
+	public void initComponent() { }
 
 	@Override
-	public void disposeComponent() {
-
-	}
+	public void disposeComponent() { }
 
 	@NotNull
 	@Override
