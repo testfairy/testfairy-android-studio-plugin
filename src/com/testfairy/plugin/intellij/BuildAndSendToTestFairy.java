@@ -5,6 +5,8 @@ import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
@@ -116,18 +118,33 @@ public class BuildAndSendToTestFairy extends AnAction {
 					return;
 				}
 
-				final int shouldLaunch = Messages.showOkCancelDialog("Would you like to preview your release in your browser when upload completes?", "Preview", "Yes", "No", Icons.TESTFAIRY_ICON);
 				new Backgroundable(project, "Uploading to TestFairy", false) {
+
+					private boolean shouldLaunchBrowser = false;
+					private final DialogWrapper.DoNotAskOption doNotAskOption = new DoNotAskBrowserOption();
+					private final Runnable showBrowserDialog = new Runnable() {
+						@Override
+						public void run() {
+							shouldLaunchBrowser = Plugin.shouldLaunchBrowser() == null ? Messages.showOkCancelDialog(
+									"Would you like to preview your release in your browser?",
+									"Preview",
+									"Go to TestFairy",
+									"No thanks",
+									Icons.TESTFAIRY_ICON,
+									doNotAskOption
+							) == Messages.OK : Plugin.shouldLaunchBrowser();
+						}
+					};
+
 					@Override
 					public void run(ProgressIndicator indicator) {
 						try {
 							Plugin.setIndicator(indicator);
-
 							indicator.setIndeterminate(true);
 
 							String url = packageRelease(testFairyTasks.get(selection));
-
-							if (shouldLaunch == 0) {
+							ApplicationManager.getApplication().invokeAndWait(showBrowserDialog, ModalityState.defaultModalityState());
+							if (shouldLaunchBrowser) {
 								launchBrowser(url);
 							}
 
@@ -135,7 +152,6 @@ public class BuildAndSendToTestFairy extends AnAction {
 							Thread.sleep(3000);
 							indicator.stop();
 							Plugin.setIndicator(null);
-
 						} catch (InterruptedException e1) {
 							Plugin.logException(e1);
 						} catch (TestFairyException tfe) {
@@ -296,4 +312,5 @@ public class BuildAndSendToTestFairy extends AnAction {
 
 		return ArrayUtil.toStringArray(explanations);
 	}
+
 }
