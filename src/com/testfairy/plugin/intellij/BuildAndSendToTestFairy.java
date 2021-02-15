@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.ArrayUtil;
@@ -115,6 +116,7 @@ public class BuildAndSendToTestFairy extends AnAction {
 					return;
 				}
 
+				final int shouldLaunch = Messages.showOkCancelDialog("Would you like to preview your release in your browser when upload completes?", "Preview", "Yes", "No", Icons.TESTFAIRY_ICON);
 				new Backgroundable(project, "Uploading to TestFairy", false) {
 					@Override
 					public void run(ProgressIndicator indicator) {
@@ -125,7 +127,9 @@ public class BuildAndSendToTestFairy extends AnAction {
 
 							String url = packageRelease(testFairyTasks.get(selection));
 
-							launchBrowser(url);
+							if (shouldLaunch == 0) {
+								launchBrowser(url);
+							}
 
 							Plugin.logInfo("Done");
 							Thread.sleep(3000);
