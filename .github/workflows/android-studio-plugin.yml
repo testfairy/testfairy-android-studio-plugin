@@ -1,4 +1,4 @@
-name: Appledoc
+name: Android Studio Plugin
 
 on:
   release:
