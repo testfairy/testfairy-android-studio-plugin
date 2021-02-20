@@ -14,7 +14,7 @@ jobs:
       run: |
         set -o pipefail
         sh get-idea-ic.sh
-        GITHUB_VERSION=$(echo "${{ github.ref }}" | sed 's|refs/tags/||g')
+        export GITHUB_VERSION=$(echo "${{ github.ref }}" | sed 's,refs/tags/,,g')
         sed -i -- "s/{{PLUGIN_VERSION}}/${{ GITHUB_VERSION }}/g" META-INF/plugin.xml
         ant -v all
     - name: Create Release
