@@ -8,8 +8,8 @@ if [ ! -d ./idea-ic ]; then
     then
         cp ~/Tools/ideaIC-${ideaVersion}.tar.gz .
     else
-        wget http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
-        # wget http://download.labs.intellij.net/idea/ideaIC-${ideaVersion}.tar.gz
+        wget -q http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
+        # wget -q http://download.labs.intellij.net/idea/ideaIC-${ideaVersion}.tar.gz
     fi
 
     # Unzip IDEA
