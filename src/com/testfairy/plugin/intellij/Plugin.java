@@ -12,6 +12,8 @@ public class Plugin implements ApplicationComponent {
 	private static ProgressIndicator indicator;
 	private static Project project;
 
+	private static Boolean shouldLaunchBrowser = null; // Null means ask user, false means no, true means yes
+
 	@Override
 	public void initComponent() { }
 
@@ -55,5 +57,13 @@ public class Plugin implements ApplicationComponent {
 
 	public static void logException(Throwable exception) {
 		TestFairyConsole.error(Util.getStackTrace(exception));
+	}
+
+	public static Boolean shouldLaunchBrowser() {
+		return shouldLaunchBrowser;
+	}
+
+	public static void setShouldLaunchBrowser(boolean shouldLaunchBrowser) {
+		Plugin.shouldLaunchBrowser = shouldLaunchBrowser;
 	}
 }
