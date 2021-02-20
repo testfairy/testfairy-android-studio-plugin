@@ -13,9 +13,10 @@ jobs:
     - name: Compile
       run: |
         set -o pipefail
+        env
         sh get-idea-ic.sh
-        export VERSION=$(echo "${{ github.ref }}" | sed 's,refs/tags/,,g')
-        sed -i -- "s/{{PLUGIN_VERSION}}/${{ VERSION }}/g" META-INF/plugin.xml
+        #export VERSION=$(echo "${{ github.ref }}" | sed 's,refs/tags/,,g')
+        #sed -i -- "s/{{PLUGIN_VERSION}}/${{ VERSION }}/g" META-INF/plugin.xml
         ant -v all
     - name: Create Release
       id: create_release
