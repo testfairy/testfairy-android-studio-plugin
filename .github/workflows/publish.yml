@@ -15,10 +15,11 @@ jobs:
           java-version: 11
       - name: Compile
         run: |
+          set -x
           echo "TF_PLUGIN_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
           export TF_PLUGIN_VERSION=${GITHUB_REF#refs/*/}
 
-          sed -i "s/{{REPLACEME}}/TF_PLUGIN_VERSION/g" META-INF/plugin.xml
+          sed -i "s/{{REPLACEME}}/$TF_PLUGIN_VERSION/g" META-INF/plugin.xml
           cat META-INF/plugin.xml
 
           bash scripts/build.sh
