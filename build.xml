@@ -207,7 +207,7 @@
   
   <target name="compile.module.testfairyandroidstudioplugin.production" description="Compile module TestFairyAndroidStudioPlugin; production classes">
     <mkdir dir="${testfairyandroidstudioplugin.output.dir}"/>
-    <javac destdir="${testfairyandroidstudioplugin.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.testfairyandroidstudioplugin}/javac">
+    <javac destdir="${testfairyandroidstudioplugin.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
       <compilerarg line="${compiler.args.testfairyandroidstudioplugin}"/>
       <bootclasspath refid="testfairyandroidstudioplugin.module.bootclasspath"/>
       <classpath refid="testfairyandroidstudioplugin.module.production.classpath"/>
