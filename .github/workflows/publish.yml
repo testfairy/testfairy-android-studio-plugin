@@ -1,0 +1,43 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Compile
+        run: |
+          set -x
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          export VERSION=${GITHUB_REF#refs/*/}
+
+          sed -i "s/{{REPLACEME}}/$VERSION/g" META-INF/plugin.xml
+          cat META-INF/plugin.xml
+
+          bash scripts/build.sh
+          mv TestFairyAndroidStudioPlugin.zip "TestFairyAndroidStudioPlugin-$VERSION.zip"
+
+      - name: Upload release artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Version ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
+          fail_on_unmatched_files: true
+          prerelease: false
+          files: |
+            TestFairyAndroidStudioPlugin-${{ env.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish
+        run: |
+          curl -i --header "Authorization: Bearer ${{ secrets.JETBRAINS_TOKEN }}" -F pluginId=com.testfairy.plugin -F file=@TestFairyAndroidStudioPlugin-${{ env.VERSION }}.zip https://plugins.jetbrains.com/plugin/uploadPlugin
+

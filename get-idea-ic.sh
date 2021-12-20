@@ -1,6 +1,8 @@
 #!/bin/bash
 
-ideaVersion="14.1.7"
+set -e
+
+ideaVersion="2021.3"
 
 if [ ! -d ./idea-ic ]; then
     # Get our IDEA dependency
@@ -8,8 +10,8 @@ if [ ! -d ./idea-ic ]; then
     then
         cp ~/Tools/ideaIC-${ideaVersion}.tar.gz .
     else
-        wget -q http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
-        # wget -q http://download.labs.intellij.net/idea/ideaIC-${ideaVersion}.tar.gz
+        curl -OL https://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
+#        curl -OL http://download.labs.intellij.net/idea/ideaIC-${ideaVersion}.tar.gz
     fi
 
     # Unzip IDEA
