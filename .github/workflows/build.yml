@@ -10,14 +10,13 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 8
-
       - name: Compile
         run: |
           set -o pipefail
           env
 
           PLUGIN_VERSION="$(echo $GITHUB_REF | sed 's,refs/tags/,,g')"
-          sed -i -- "s/{{REPLACE_ME}}/$PLUGIN_VERSION/g" META-INF/plugin.xml
+          sed -i "s/{{REPLACE_ME}}/$PLUGIN_VERSION/g" META-INF/plugin.xml
 
           bash scripts/build.sh
 
