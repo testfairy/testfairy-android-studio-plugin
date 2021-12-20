@@ -143,7 +143,7 @@
   <property name="module.jdk.bin.testfairyandroidstudioplugin" value="${project.jdk.bin}"/>
   <property name="module.jdk.classpath.testfairyandroidstudioplugin" value="${project.jdk.classpath}"/>
   
-  <property name="compiler.args.testfairyandroidstudioplugin" value="-encoding UTF-8 -source 1.6 -target 1.6 ${compiler.args}"/>
+  <property name="compiler.args.testfairyandroidstudioplugin" value="-encoding UTF-8 -source 11 -target 11 ${compiler.args}"/>
   
   <property name="testfairyandroidstudioplugin.output.dir" value="${module.testfairyandroidstudioplugin.basedir}/out/production/TestFairyAndroidStudioPlugin"/>
   <property name="testfairyandroidstudioplugin.testoutput.dir" value="${module.testfairyandroidstudioplugin.basedir}/out/test/TestFairyAndroidStudioPlugin"/>
@@ -207,7 +207,7 @@
   
   <target name="compile.module.testfairyandroidstudioplugin.production" description="Compile module TestFairyAndroidStudioPlugin; production classes">
     <mkdir dir="${testfairyandroidstudioplugin.output.dir}"/>
-    <javac destdir="${testfairyandroidstudioplugin.output.dir}" target="1.6" source="1.6" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+    <javac destdir="${testfairyandroidstudioplugin.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
       <compilerarg line="${compiler.args.testfairyandroidstudioplugin}"/>
       <bootclasspath refid="testfairyandroidstudioplugin.module.bootclasspath"/>
       <classpath refid="testfairyandroidstudioplugin.module.production.classpath"/>
