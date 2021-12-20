@@ -16,20 +16,27 @@ jobs:
       - name: Compile
         run: |
           set -x
-          echo "TF_PLUGIN_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          export TF_PLUGIN_VERSION=${GITHUB_REF#refs/*/}
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          export VERSION=${GITHUB_REF#refs/*/}
 
-          sed -i "s/{{REPLACEME}}/$TF_PLUGIN_VERSION/g" META-INF/plugin.xml
+          sed -i "s/{{REPLACEME}}/$VERSION/g" META-INF/plugin.xml
           cat META-INF/plugin.xml
 
           bash scripts/build.sh
-      - name: Upload Release Asset
-        uses: svenstaro/upload-release-action@v2
+          mv TestFairyAndroidStudioPlugin.zip "TestFairyAndroidStudioPlugin-$VERSION.zip"
+
+      - name: Upload release artifacts
+        uses: softprops/action-gh-release@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          file: TestFairyAndroidStudioPlugin.zip
-          asset_name: testfairy-intellij-${{ env.TF_PLUGIN_VERSION }}-bin.zip
+          name: Version ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
+          fail_on_unmatched_files: true
+          prerelease: false
+          files: |
+            TestFairyAndroidStudioPlugin-${{ env.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
 #      - name: Publish
 #        run: |
