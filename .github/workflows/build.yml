@@ -15,8 +15,8 @@ jobs:
           set -o pipefail
           env
 
-          PLUGIN_VERSION="$(echo $GITHUB_REF | sed 's,refs/tags/,,g')"
-          sed -i "s/{{REPLACE_ME}}/$PLUGIN_VERSION/g" META-INF/plugin.xml
+          PLUGINVERSION="$(echo $GITHUB_REF | sed 's,refs/tags/,,g')"
+          sed -i "s/{{REPLACEME}}/$PLUGINVERSION/g" META-INF/plugin.xml
 
           bash scripts/build.sh
 
