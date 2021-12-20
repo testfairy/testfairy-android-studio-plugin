@@ -4,7 +4,7 @@
   <property file="build.properties"/>
 
   <!-- Set jdk.home if not specified in build.properties. -->
-  <condition property="jdk.home" value="${java.home}/..">
+  <condition property="jdk.home" value="${java.home}/">
     <not>
       <isset property="jdk.home"/>
     </not>
@@ -101,11 +101,10 @@
     </fileset>
   </path>
 
-  <property name="project.jdk.home" value="${java.home}/.."/>
+  <property name="project.jdk.home" value="${java.home}/"/>
   <property name="project.jdk.bin" value="${jdk.bin}"/>
   <property name="project.jdk.classpath" value="jdk.classpath"/>
-  
-  
+
   <!-- Project Libraries -->
   
   <path id="library.gradle-base-services-5.1.1.classpath">
@@ -127,52 +126,24 @@
     <pathelement location="${basedir}/lib/gradle-wrapper-5.1.1.jar"/>
   </path>
 
-<!--  <path id="library.jcl-over-slf4j-1.7.25.classpath">-->
-<!--    <pathelement location="${basedir}/lib/jcl-over-slf4j-1.7.25.jar"/>-->
-<!--  </path>-->
-
-<!--  <path id="library.jul-to-slf4j-1.7.25.classpath">-->
-<!--    <pathelement location="${basedir}/lib/jul-to-slf4j-1.7.25.jar"/>-->
-<!--  </path>-->
-
-<!--  <path id="library.log4j-over-slf4j-1.7.25.classpath">-->
-<!--    <pathelement location="${basedir}/lib/log4j-over-slf4j-1.7.25.jar"/>-->
-<!--  </path>-->
-
-  <path id="library.slf4j-api-1.7.25.classpath">
-    <pathelement location="${basedir}/lib/slf4j-api-1.7.25.jar"/>
+  <path id="library.slf4j-api-1.7.32.classpath">
+    <pathelement location="${basedir}/lib/slf4j-api-1.7.32.jar"/>
   </path>
 
-  <path id="library.slf4j-simple-1.7.25.classpath">
-    <pathelement location="${basedir}/lib/slf4j-simple-1.7.25.jar"/>
+  <path id="library.slf4j-simple-1.7.32.classpath">
+    <pathelement location="${basedir}/lib/slf4j-simple-1.7.32.jar"/>
   </path>
 
-  <!-- Register Custom Compiler Taskdefs -->
-  <property name="javac2.home" value="${idea.home}/lib"/>
-  <path id="javac2.classpath">
-    <pathelement location="${javac2.home}/javac2.jar"/>
-    <pathelement location="${javac2.home}/jdom.jar"/>
-    <pathelement location="${javac2.home}/asm-all.jar"/>
-    <pathelement location="${javac2.home}/jgoodies-forms.jar"/>
-  </path>
-  <target name="register.custom.compilers">
-    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
-    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
-  </target>
-  
   <!-- Modules -->
-  
-  
   <!-- Module TestFairyAndroidStudioPlugin -->
   
   <dirname property="module.testfairyandroidstudioplugin.basedir" file="${ant.file}"/>
-  
   
   <property name="module.jdk.home.testfairyandroidstudioplugin" value="${project.jdk.home}"/>
   <property name="module.jdk.bin.testfairyandroidstudioplugin" value="${project.jdk.bin}"/>
   <property name="module.jdk.classpath.testfairyandroidstudioplugin" value="${project.jdk.classpath}"/>
   
-  <property name="compiler.args.testfairyandroidstudioplugin" value="-encoding UTF-8 -source 1.6 -target 1.6 ${compiler.args}"/>
+  <property name="compiler.args.testfairyandroidstudioplugin" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
   
   <property name="testfairyandroidstudioplugin.output.dir" value="${module.testfairyandroidstudioplugin.basedir}/out/production/TestFairyAndroidStudioPlugin"/>
   <property name="testfairyandroidstudioplugin.testoutput.dir" value="${module.testfairyandroidstudioplugin.basedir}/out/test/TestFairyAndroidStudioPlugin"/>
@@ -185,22 +156,16 @@
     <path refid="${module.jdk.classpath.testfairyandroidstudioplugin}"/>
     <path refid="library.gradle-base-services-5.1.1.classpath"/>
     <path refid="library.gradle-wrapper-5.1.1.classpath"/>
-<!--    <path refid="library.jcl-over-slf4j-1.7.25.classpath"/>-->
-<!--    <path refid="library.jul-to-slf4j-1.7.25.classpath"/>-->
-<!--    <path refid="library.log4j-over-slf4j-1.7.25.classpath"/>-->
-    <path refid="library.slf4j-api-1.7.25.classpath"/>
-    <path refid="library.slf4j-simple-1.7.25.classpath"/>
+    <path refid="library.slf4j-api-1.7.32.classpath"/>
+    <path refid="library.slf4j-simple-1.7.32.classpath"/>
   </path>
   
   <path id="testfairyandroidstudioplugin.runtime.production.module.classpath">
     <pathelement location="${testfairyandroidstudioplugin.output.dir}"/>
     <path refid="library.gradle-base-services-5.1.1.classpath"/>
     <path refid="library.gradle-wrapper-5.1.1.classpath"/>
-<!--    <path refid="library.jcl-over-slf4j-1.7.25.classpath"/>-->
-<!--    <path refid="library.jul-to-slf4j-1.7.25.classpath"/>-->
-<!--    <path refid="library.log4j-over-slf4j-1.7.25.classpath"/>-->
-    <path refid="library.slf4j-api-1.7.25.classpath"/>
-    <path refid="library.slf4j-simple-1.7.25.classpath"/>
+    <path refid="library.slf4j-api-1.7.32.classpath"/>
+    <path refid="library.slf4j-simple-1.7.32.classpath"/>
   </path>
   
   <path id="testfairyandroidstudioplugin.module.classpath">
@@ -208,11 +173,8 @@
     <pathelement location="${testfairyandroidstudioplugin.output.dir}"/>
     <path refid="library.gradle-base-services-5.1.1.classpath"/>
     <path refid="library.gradle-wrapper-5.1.1.classpath"/>
-<!--    <path refid="library.jcl-over-slf4j-1.7.25.classpath"/>-->
-<!--    <path refid="library.jul-to-slf4j-1.7.25.classpath"/>-->
-<!--    <path refid="library.log4j-over-slf4j-1.7.25.classpath"/>-->
-    <path refid="library.slf4j-api-1.7.25.classpath"/>
-    <path refid="library.slf4j-simple-1.7.25.classpath"/>
+    <path refid="library.slf4j-api-1.7.32.classpath"/>
+    <path refid="library.slf4j-simple-1.7.32.classpath"/>
   </path>
   
   <path id="testfairyandroidstudioplugin.runtime.module.classpath">
@@ -220,11 +182,8 @@
     <pathelement location="${testfairyandroidstudioplugin.output.dir}"/>
     <path refid="library.gradle-base-services-5.1.1.classpath"/>
     <path refid="library.gradle-wrapper-5.1.1.classpath"/>
-<!--    <path refid="library.jcl-over-slf4j-1.7.25.classpath"/>-->
-<!--    <path refid="library.jul-to-slf4j-1.7.25.classpath"/>-->
-<!--    <path refid="library.log4j-over-slf4j-1.7.25.classpath"/>-->
-    <path refid="library.slf4j-api-1.7.25.classpath"/>
-    <path refid="library.slf4j-simple-1.7.25.classpath"/>
+    <path refid="library.slf4j-api-1.7.32.classpath"/>
+    <path refid="library.slf4j-simple-1.7.32.classpath"/>
   </path>
   
   
@@ -246,15 +205,15 @@
   
   <target name="compile.module.testfairyandroidstudioplugin" depends="compile.module.testfairyandroidstudioplugin.production,compile.module.testfairyandroidstudioplugin.tests" description="Compile module TestFairyAndroidStudioPlugin"/>
   
-  <target name="compile.module.testfairyandroidstudioplugin.production" depends="register.custom.compilers" description="Compile module TestFairyAndroidStudioPlugin; production classes">
+  <target name="compile.module.testfairyandroidstudioplugin.production" description="Compile module TestFairyAndroidStudioPlugin; production classes">
     <mkdir dir="${testfairyandroidstudioplugin.output.dir}"/>
-    <javac2 destdir="${testfairyandroidstudioplugin.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.testfairyandroidstudioplugin}/javac">
+    <javac destdir="${testfairyandroidstudioplugin.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.testfairyandroidstudioplugin}/javac">
       <compilerarg line="${compiler.args.testfairyandroidstudioplugin}"/>
       <bootclasspath refid="testfairyandroidstudioplugin.module.bootclasspath"/>
       <classpath refid="testfairyandroidstudioplugin.module.production.classpath"/>
       <src refid="testfairyandroidstudioplugin.module.sourcepath"/>
       <patternset refid="excluded.from.compilation.testfairyandroidstudioplugin"/>
-    </javac2>
+    </javac>
     
     <copy todir="${testfairyandroidstudioplugin.output.dir}">
       <fileset dir="${module.testfairyandroidstudioplugin.basedir}/src">
@@ -268,7 +227,7 @@
     </copy>
   </target>
   
-  <target name="compile.module.testfairyandroidstudioplugin.tests" depends="register.custom.compilers,compile.module.testfairyandroidstudioplugin.production" description="compile module TestFairyAndroidStudioPlugin; test classes" unless="skip.tests"/>
+  <target name="compile.module.testfairyandroidstudioplugin.tests" depends="compile.module.testfairyandroidstudioplugin.production" description="compile module TestFairyAndroidStudioPlugin; test classes" unless="skip.tests"/>
   
   <target name="clean.module.testfairyandroidstudioplugin" description="cleanup module">
     <delete dir="${testfairyandroidstudioplugin.output.dir}"/>
@@ -289,11 +248,8 @@
         <attribute name="Manifest-Version" value="1.0"/>
       </manifest>
     </jar>
-<!--    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/jcl-over-slf4j-1.7.25.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/jcl-over-slf4j-1.7.25.jar"/>-->
-<!--    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/jul-to-slf4j-1.7.25.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/jul-to-slf4j-1.7.25.jar"/>-->
-<!--    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/log4j-over-slf4j-1.7.25.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/log4j-over-slf4j-1.7.25.jar"/>-->
-    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/slf4j-api-1.7.25.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/slf4j-api-1.7.25.jar"/>
-    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/slf4j-simple-1.7.25.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/slf4j-simple-1.7.25.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/slf4j-api-1.7.32.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/slf4j-api-1.7.32.jar"/>
+    <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/slf4j-simple-1.7.32.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/slf4j-simple-1.7.32.jar"/>
     <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-wrapper-5.1.1.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-wrapper-5.1.1.jar"/>
     <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-base-services-5.1.1.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-base-services-5.1.1.jar"/>
     <copy file="${module.testfairyandroidstudioplugin.basedir}/lib/gradle-base-services-groovy-5.1.1.jar" tofile="${tmp.dir.testfairyandroidstudioplugin}/lib/gradle-base-services-groovy-5.1.1.jar"/>
