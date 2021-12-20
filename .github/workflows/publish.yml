@@ -37,9 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-#      - name: Publish
-#        run: |
-#          ${{ env.TF_GRADLE_VERSION }}
-#          curl -i --header "Authorization: Bearer <permanentToken>" -F pluginId=<pluginId> -F file=@<path to plugin .jar/.zip file> -F channel=<channel> https://plugins.jetbrains.com/plugin/uploadPlugin
+      - name: Publish
+        run: |
+          curl -i --header "Authorization: Bearer ${{ secrets.JETBRAINS_TOKEN }}" -F pluginId=com.testfairy.plugin -F file=@TestFairyAndroidStudioPlugin-${{ env.VERSION }}.zip https://plugins.jetbrains.com/plugin/uploadPlugin
 
