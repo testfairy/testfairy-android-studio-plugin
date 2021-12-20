@@ -15,12 +15,10 @@ jobs:
           java-version: 8
       - name: Compile
         run: |
-          set -o pipefail
-          env
+          echo "TF_PLUGIN_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          export TF_PLUGIN_VERSION=${GITHUB_REF#refs/*/}
 
-          PLUGINVERSION="$(echo $GITHUB_REF | sed 's,refs/tags/,,g')"
-          sed -i "s/{{REPLACEME}}/$PLUGINVERSION/g" META-INF/plugin.xml
-
+          sed -i "s/{{REPLACEME}}/TF_PLUGIN_VERSION/g" META-INF/plugin.xml
           bash scripts/build.sh
       - name: Upload Release Asset
         uses: svenstaro/upload-release-action@v2
@@ -32,5 +30,6 @@ jobs:
 
 #      - name: Publish
 #        run: |
+#          ${{ env.TF_GRADLE_VERSION }}
 #          curl -i --header "Authorization: Bearer <permanentToken>" -F pluginId=<pluginId> -F file=@<path to plugin .jar/.zip file> -F channel=<channel> https://plugins.jetbrains.com/plugin/uploadPlugin
 

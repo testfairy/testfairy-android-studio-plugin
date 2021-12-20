@@ -12,19 +12,4 @@ jobs:
           java-version: 8
       - name: Compile
         run: |
-          set -o pipefail
-          env
-
-          PLUGINVERSION="$(echo $GITHUB_REF | sed 's,refs/tags/,,g')"
-          sed -i "s/{{REPLACEME}}/$PLUGINVERSION/g" META-INF/plugin.xml
-
           bash scripts/build.sh
-
-      - name: Upload Release Asset
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          file: TestFairyAndroidStudioPlugin.zip
-          asset_name: testfairy-intellij-${{ github.ref }}-bin.zip
-
