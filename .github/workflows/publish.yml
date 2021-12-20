@@ -39,5 +39,5 @@ jobs:
 
       - name: Publish
         run: |
-          curl -i --header "Authorization: Bearer ${{ secrets.JETBRAINS_TOKEN }}" -F pluginId=com.testfairy.plugin -F file=@TestFairyAndroidStudioPlugin-${{ env.VERSION }}.zip https://plugins.jetbrains.com/plugin/uploadPlugin
+          curl -i --header "Authorization: Bearer ${{ secrets.JETBRAINS_TOKEN }}" -F xmlId=com.testfairy.plugin -F file=@TestFairyAndroidStudioPlugin-${{ env.VERSION }}.zip https://plugins.jetbrains.com/plugin/uploadPlugin
 
