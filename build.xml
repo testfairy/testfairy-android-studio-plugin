@@ -143,7 +143,7 @@
   <property name="module.jdk.bin.testfairyandroidstudioplugin" value="${project.jdk.bin}"/>
   <property name="module.jdk.classpath.testfairyandroidstudioplugin" value="${project.jdk.classpath}"/>
   
-  <property name="compiler.args.testfairyandroidstudioplugin" value="-encoding UTF-8 -source 1.6 -target 1.6 ${compiler.args}"/>
+  <property name="compiler.args.testfairyandroidstudioplugin" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
   
   <property name="testfairyandroidstudioplugin.output.dir" value="${module.testfairyandroidstudioplugin.basedir}/out/production/TestFairyAndroidStudioPlugin"/>
   <property name="testfairyandroidstudioplugin.testoutput.dir" value="${module.testfairyandroidstudioplugin.basedir}/out/test/TestFairyAndroidStudioPlugin"/>
@@ -207,12 +207,16 @@
   
   <target name="compile.module.testfairyandroidstudioplugin.production" description="Compile module TestFairyAndroidStudioPlugin; production classes">
     <mkdir dir="${testfairyandroidstudioplugin.output.dir}"/>
-    <javac destdir="${testfairyandroidstudioplugin.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
-      <compilerarg line="${compiler.args.testfairyandroidstudioplugin}"/>
-      <bootclasspath refid="testfairyandroidstudioplugin.module.bootclasspath"/>
-      <classpath refid="testfairyandroidstudioplugin.module.production.classpath"/>
-      <src refid="testfairyandroidstudioplugin.module.sourcepath"/>
-      <patternset refid="excluded.from.compilation.testfairyandroidstudioplugin"/>
+<!--    <javac destdir="${testfairyandroidstudioplugin.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.testfairyandroidstudioplugin}/javac">-->
+<!--      <compilerarg line="${compiler.args.testfairyandroidstudioplugin}"/>-->
+<!--      <bootclasspath refid="testfairyandroidstudioplugin.module.bootclasspath"/>-->
+<!--      <classpath refid="testfairyandroidstudioplugin.module.production.classpath"/>-->
+<!--      <src refid="testfairyandroidstudioplugin.module.sourcepath"/>-->
+<!--      <patternset refid="excluded.from.compilation.testfairyandroidstudioplugin"/>-->
+<!--    </javac>-->
+    <javac destdir="${testfairyandroidstudioplugin.output.dir}">
+            <classpath refid="testfairyandroidstudioplugin.module.production.classpath"/>
+            <src refid="testfairyandroidstudioplugin.module.sourcepath"/>
     </javac>
     
     <copy todir="${testfairyandroidstudioplugin.output.dir}">
